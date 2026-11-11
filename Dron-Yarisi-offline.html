@@ -2094,6 +2094,7 @@ function ozStats(g){
   g.hnd=1.18+ozEff("p",oup.p);g.accel=1.1+ozEff("a",oup.a);
   g.res=.85*(1-Math.exp(-oup.z/8));g.shdMul=1+.04*oup.z;g.dur=.5+.5*(1-Math.exp(-oup.z/8));
 }
+if(oup.m+oup.b+oup.p+oup.a+oup.z===0&&(upg.m||upg.b||upg.p)){oup.m=upg.m;oup.b=upg.b;oup.p=upg.p}
 function syncOzel(){
   var g=gDef("ozel");ozStats(g);g.shape=des.sh;g.rshape=des.rs;g.body=DCOL[des.bc];g.acc=dkc(g.body);g.rcol=DCOL[des.rc];
 }
