@@ -222,6 +222,9 @@ body.touch .abs{display:none}
 .card button.pri::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;transform:skewX(-20deg);
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);animation:shine 3s ease-in-out infinite}
 @keyframes shine{0%,55%{left:-60%}100%{left:130%}}
+.seg{display:flex;gap:0;margin:.5em auto .1em;border:1px solid rgba(47,212,255,.55);border-radius:.7em;overflow:hidden;background:rgba(5,17,44,.55)}
+.seg button{flex:1 1 0;padding:.55em .5em;font:700 .95em var(--f);font-style:italic;letter-spacing:.08em;text-transform:uppercase;color:var(--cy2);background:transparent;border:0;cursor:pointer;min-height:2.6em}
+.seg button.on{background:linear-gradient(180deg,#2fd4ff,#1a8fd0);color:#04223a}
 .btns{display:flex;gap:.6em;justify-content:center;flex-wrap:wrap;margin-top:.7em}
 .card button.tg{font-size:.8em;padding:.35em 1.2em;letter-spacing:.12em;border-style:dashed;opacity:.85}
 .btns.sec button{flex:1 1 0;min-width:7em;padding:.5em .6em}
@@ -643,9 +646,10 @@ body.touch.racing #steer{animation:steerh 3.2s ease-out forwards}
         <li><b>Kamera</b><span><kbd>C</kbd> açıyı değiştirir (üstteki KAMERA tuşu da olur)</span></li>
         <li><b>Viraj</b><span>hızlandıkça seni dışarı iter, virajın içine doğru yönlendir</span></li>
       </ul></details>
-      <div class="btns"><button id="go" class="pri" type="button">ÇOKLU OYUN</button></div>
+      <div class="seg" id="modeSel"><button id="mDuel" type="button">İkili Oyun</button><button id="mMulti" type="button" class="on">Çoklu Oyun</button></div>
+      <div class="btns"><button id="go" class="pri" type="button">YARIŞA BAŞLA</button></div>
       <div class="btns sec"><button id="tOpen" class="alt" type="button">Yol Seç</button><button id="gOpen" class="alt" type="button">Garaj</button></div>
-      <div class="btns sec"><button id="duel" class="alt" type="button">İkili Oyun</button><button id="onl" class="alt onlb" type="button">Online Yarış</button></div>
+      <div class="btns"><button id="onl" class="alt onlb" type="button">Online Yarış</button></div>
       <div class="btns"><button id="tttog" class="alt tg" type="button">ZAMAN TURU: KAPALI</button></div>
       <div class="btns sec"><button id="bkOpen" class="alt" type="button">Yedek Al / Yükle</button></div>
       </div>
@@ -2792,8 +2796,11 @@ function startCountdown(){tilt.cal=true;
   $("ov").hidden=true;cd=0;state="countdown";
 }
 function setMode(m){if(gmode!==m||(m==="multi"&&state==="menu")){gmode=m;resetRace()}}
-$("go").addEventListener("click",function(){setMode("multi");startCountdown()});
-$("duel").addEventListener("click",function(){setMode("duel");startCountdown();if(rivalM)floatTxt("RAKİP: "+rivalM.n,"g")});
+function syncSeg(){$("mDuel").classList.toggle("on",gmode==="duel");$("mMulti").classList.toggle("on",gmode!=="duel")}
+$("mDuel").addEventListener("click",function(){setMode("duel");syncSeg();this.blur()});
+$("mMulti").addEventListener("click",function(){setMode("multi");syncSeg();this.blur()});
+syncSeg();
+$("go").addEventListener("click",function(){syncSeg();startCountdown();if(gmode==="duel"&&rivalM&&!tt)floatTxt("RAKİP: "+rivalM.n,"g")});
 $("again").addEventListener("click",function(){if(state==="countdown"||state==="race")return;if(online){netToLobby();return}if(contTrk&&contTrk!==TRK)setTrack(contTrk);resetRace();startCountdown()});
 function countUp(e,to,f,delay){
   var t0=null,dur=900;e.textContent=f(0);
