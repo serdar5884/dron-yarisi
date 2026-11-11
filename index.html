@@ -840,17 +840,17 @@ var _v=new THREE.Vector3(),_c1=new THREE.Vector3(),_c2=new THREE.Vector3();
 var app=$("app"),cv=$("gl"),fx=$("fx"),fxc=fx.getContext("2d");
 var coarse=window.matchMedia&&matchMedia("(pointer:coarse)").matches;
 if(coarse)document.body.classList.add("touch");
-var renderer=new THREE.WebGLRenderer({canvas:cv,antialias:!coarse,powerPreference:"high-performance"});
-var prMax=Math.min(window.devicePixelRatio||1,coarse?1.5:2),prCur=Math.min(prMax,coarse?1.15:1.75),gq=0,paused=false,fpsE=.0167,adT=3,upT=6,fcnt=0;
+var renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:"high-performance"});
+var prMax=Math.min(window.devicePixelRatio||1,2),prCur=Math.min(prMax,coarse?1.6:1.75),gq=0,paused=false,fpsE=.0167,adT=3,upT=6,fcnt=0;
 renderer.setPixelRatio(prCur);
-function setPR(v){v=Math.max(coarse?.8:.6,Math.min(prMax,v));if(Math.abs(v-prCur)<.02)return;prCur=v;renderer.setPixelRatio(v);resize()}
+function setPR(v){v=Math.max(coarse?.9:.6,Math.min(prMax,v));if(Math.abs(v-prCur)<.02)return;prCur=v;renderer.setPixelRatio(v);resize()}
 var scene=new THREE.Scene();
 scene.fog=new THREE.Fog(0xcfe7f7,170,1700);
 scene.background=new THREE.Color(0xcfe7f7);
 var cam=new THREE.PerspectiveCamera(60,16/9,.3,3300);
 function resize(){
   var w=app.clientWidth||innerWidth,h=app.clientHeight||innerHeight;
-  renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();var fs=coarse?.6:1;fx.width=Math.round(w*fs);fx.height=Math.round(h*fs);
+  renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();if(marsh&&marsh.fit)marsh.fit();var fs=coarse?.6:1;fx.width=Math.round(w*fs);fx.height=Math.round(h*fs);
 }
 window.addEventListener("resize",resize);resize();
 var hemi=new THREE.HemisphereLight(0xffffff,0xa6c880,.88);scene.add(hemi);
@@ -1656,7 +1656,9 @@ function buildWorld(){
       }
       place(H,[-18,-4,9][idx]+(sd<0?-2.5:0),sd*(W/2+4.2+idx*.5),sd,1.4);
     }
-    marsh={g:M.g,M:M,hum:hum,t:0};
+    marsh={g:M.g,M:M,hum:hum,t:0,nar:false};
+    marsh.fit=function(){var nar=cam.aspect<1.3||coarse&&cam.aspect<1.8;marsh.nar=nar||coarse;var scl=nar?3.2:(coarse?2:1.5),u=(nar||coarse)?-W*.12:W/2+4.8;tp(-9,u,0,_v);marsh.y0=Hw(_v.x,_v.z);M.g.position.set(_v.x,marsh.y0,_v.z);M.g.scale.setScalar(scl);M.wx=_v.x;M.wz=_v.z};
+    marsh.fit();
   })();
   (function(){
     var CC=[0xff5a5a,0xffd23a,0x4aa8ff,0xffffff,0x6af0a0,0xff7ae0,0xff9a3a,0x8a6dff,0x2fd0c0],SK=[0xf0c090,0xd9a070,0xb77a50,0x8a5a3a,0xf5d0b0],PL=[],bad2=[];
@@ -1737,7 +1739,7 @@ function buildWorld(){
     });
     balls.push(b);
   }
-  buildMtTunnels();liftWorld();buildTerrain();
+  buildMtTunnels();liftWorld();if(marsh&&marsh.fit)marsh.fit();buildTerrain();
 }
 
 /* ---------- Arazi: yükseklik, dağ tünelleri, zemin ---------- */
@@ -3207,6 +3209,7 @@ function buildFly(){
 function updMarshal(dt){
   var m=marsh;if(!m)return;
   m.t+=dt;var t=m.t,M=m.M,pp=player.m.position,K=Math.min(1,dt*9);
+  m.g.visible=!(m.nar&&((state==="race"&&raceT>3)||state==="finish"));
   function tg(n,v,k){n.rotation.x+=(v-n.rotation.x)*(k||K)}
   var wv=3,amp=.08,lean=0,aR=-Math.PI+.15,fR=-.25,aLx=-.15,aLz=.1,fLx=-.2,fLz=0,lgL=0,lgR=0,spd=K;
   if(state==="countdown"){
@@ -3222,7 +3225,7 @@ function updMarshal(dt){
   tg(M.aR,aR,spd);M.aR.rotation.z=Math.sin(t*wv)*amp*(wv>3?1:.6);
   tg(M.fR,fR);tg(M.aL,aLx);M.aL.rotation.z+=((aLz+(state==="finish"?Math.sin(t*10)*.3:0))-M.aL.rotation.z)*K;tg(M.fL,fLx);
   tg(M.torso,lean,spd);tg(M.legR,lgR,K);tg(M.legL,lgL,K);
-  M.g.position.y=0;M.torso.position.y=.88+Math.sin(t*2)*.006;
+  M.g.position.y=m.y0||0;M.torso.position.y=.88+Math.sin(t*2)*.006;
   var cp=M.cg0,pa=M.cloth.geometry.attributes.position,sp=wv>3?wv:3.5,x,i,ar=M.cloth.userData;
   for(i=0;i<pa.count;i++){x=cp[i*3];pa.array[i*3+2]=Math.sin(x*5-t*sp*1.7)*.14*x*(wv>3?1:.5)+(state==="race"&&raceT>4.5?-.1*x:0)}
   pa.needsUpdate=true;
@@ -3483,7 +3486,7 @@ function render(dt){
 var last=performance.now();
 function applyGq(){
   chipT($("gfxb"),"GRAFİK","GFX",": "+GFXN[gq]);
-  if(gq===1)setPR(Math.min(prMax,coarse?.85:.8));else if(gq===2)setPR(prMax);else setPR(Math.min(prMax,coarse?1.15:1.75));
+  if(gq===1)setPR(Math.min(prMax,coarse?1:.8));else if(gq===2)setPR(prMax);else setPR(Math.min(prMax,coarse?1.6:1.75));
 }
 $("gfxb").addEventListener("click",function(){gq=(gq+1)%3;applyGq();save();this.blur()});
 function setPause(v){
