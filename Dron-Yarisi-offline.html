@@ -1640,10 +1640,10 @@ function buildWorld(){
     /* Bayrakçı */
     var M=mkHuman({shirt:0xf2f2f2,vest:0xff7a1a,pants:0x1e2433,skin:0xe8b888,cap:0xe8332e,role:"marshal"});
     var PH=1.1,pod=new THREE.Mesh(new THREE.BoxGeometry(2.2,PH,2.2),new THREE.MeshLambertMaterial({color:0x39425a}));pod.position.set(0,PH/2,0);M.g.add(pod);M.g.children.forEach(function(c){if(c!==pod)c.position.y+=PH});
-    var pole=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,2.7,6),new THREE.MeshLambertMaterial({color:0xe0e0e0}));pole.position.y=-1.15;M.fR.add(pole);
+    var pole=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,3.5,6),new THREE.MeshLambertMaterial({color:0xe0e0e0}));pole.position.y=-1.55;M.fR.add(pole);
     var ft=ctex(160,100,function(c,w,h){for(var y=0;y<5;y++)for(var x=0;x<8;x++){c.fillStyle=(x+y)%2?"#111":"#fff";c.fillRect(x*w/8,y*h/5,w/8+1,h/5+1)}});ft._own=true;
-    var cg=new THREE.PlaneGeometry(1.5,.95,14,4);cg.translate(.75,0,0);
-    var cloth=new THREE.Mesh(cg,new THREE.MeshBasicMaterial({map:ft,side:THREE.DoubleSide}));cloth.position.set(.03,-2.1,0);M.fR.add(cloth);
+    var cg=new THREE.PlaneGeometry(2.9,1.9,18,5);cg.translate(1.45,0,0);
+    var cloth=new THREE.Mesh(cg,new THREE.MeshBasicMaterial({map:ft,side:THREE.DoubleSide}));cloth.position.set(.03,-2.3,0);M.fR.add(cloth);
     M.cloth=cloth;M.cg0=new Float32Array(cg.attributes.position.array);M.t=0;
     place(M,-9,W/2+4.8,1,sc);
     /* Görevliler: bayrakçının yanında sağda ve solda */
@@ -3211,11 +3211,11 @@ function updMarshal(dt){
   var wv=3,amp=.08,lean=0,aR=-Math.PI+.15,fR=-.25,aLx=-.15,aLz=.1,fLx=-.2,fLz=0,lgL=0,lgR=0,spd=K;
   if(state==="countdown"){
     var c=Math.min(1,cd/3);wv=8+c*6;amp=.1+c*.08;aR=-Math.PI+.12+c*.08;lean=-.14*c;aLx=-.5;fLx=-1.5;lgR=-.1;
-    if(cd>2.5){lean=-.25;aR=-Math.PI+.05}
+    if(cd>2.2&&cd<=2.5){lean=-.25;aR=-Math.PI+.05}
+    else if(cd>2.5){var k0=Math.min(1,(cd-2.5)/.5),k=1-Math.pow(1-k0,2);aR=(-Math.PI+.2)+(-.8+Math.PI-.2)*k;lean=-.25+.57*k;lgR=-.55*k;lgL=.35*k;wv=14;amp=.25*(1-k)+.03;spd=Math.min(1,dt*30);aLx=.5;fLx=-.3}
   }else if(state==="race"){
     var q=raceT;
-    if(q<.5){var k=q/.5;k*=k;aR=(-Math.PI+.2)+(-.8+Math.PI-.2)*(1-Math.pow(1-q/.5,2));lean=.32*(1-Math.pow(1-q/.5,2));lgR=-.55;lgL=.35;wv=14;amp=.25*(1-q/.5)+.03;spd=Math.min(1,dt*30);aLx=.5;fLx=-.3}
-    else if(q<4.5){aR=-.8;lean=.12;lgR=-.2;wv=6;amp=.05;aLx=-.15}
+    if(q<4.5){var rk=Math.min(1,q/1.2);aR=-.8;lean=.32-.2*rk;lgR=-.55+.35*rk;lgL=.35*(1-rk);wv=6;amp=.05;aLx=.5-.65*rk}
     else{aR=-.12;fR=-.1;wv=3;amp=.03}
   }else if(state==="finish"){wv=10;amp=.28;aR=-Math.PI+.25;aLx=-Math.PI+.35;fLx=-.2;aLz=-.15}
   else{wv=3;amp=.12}
