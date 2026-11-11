@@ -687,7 +687,7 @@ body.touch.racing #steer{animation:steerh 3.2s ease-out forwards}
       <div class="gl" id="eS"></div>
       <p id="eN"></p>
       <div class="btns"><button id="again" class="pri" type="button">YARIŞA DEVAM</button></div>
-      <div class="btns sec"><button id="gOpen2" class="alt" type="button">Garaja Dön</button><button id="nxt" class="alt" type="button">Yarışı Tekrarla</button></div>
+      <div class="btns sec"><button id="tOpen2" class="alt" type="button">Yol Seç</button><button id="gOpen2" class="alt" type="button">Garaja Dön</button><button id="nxt" class="alt" type="button">Yarışı Tekrarla</button></div>
       </div>
     </div>
     <div class="card wide" id="cg" data-tab="d" hidden>
@@ -807,7 +807,13 @@ var TRACKS=[
  {id:"tunel",n:"Derin Mavi Tüneli",L:5000,W:28,theme:"abyss",a:[[116,1,.9],[64,3,2.0],[34,5,.4],[17,7,1.7],[8,9,.6]],drift:1.9,ai:[160,173],stars:10,mult:2.8,seed:1212,lv:5,tb:1}
 ];
 (function(){
+  var OR=["vadi","gunbatimi","neon","deniz","gol","sis","tunel","kabus","korfez","col","buz","siber"],LV=[1,2,3,4,4,5,5,6,6,7,7,8],MU=[1,1.3,1.6,2,2.3,2.6,2.9,3.2,3.5,3.8,4.1,4.5];
+  TRACKS.sort(function(a,b){return OR.indexOf(a.id)-OR.indexOf(b.id)});
+  TRACKS.forEach(function(t,i){t.stars=i*2;t.lv=LV[i];t.mult=MU[i];t.ai=[Math.round(145+i*2.6),Math.round(158+i*2.6)]});
+})();
+(function(){
   var LN={vadi:3360,gunbatimi:3640,neon:3780,sis:4060,kabus:4200,col:3920,buz:4200,siber:4340,deniz:4300,gol:4000,korfez:4300,tunel:4300};
+  Object.keys(LN).forEach(function(k){LN[k]=Math.round(LN[k]*1.2/10)*10});
   TRACKS.forEach(function(t){
     var k=LN[t.id]/t.L,m=Math.pow(k,1.6)*(t.id==="vadi"?.75:1);
     t.a.forEach(function(a){a[0]=Math.round(a[0]*m*(a[1]>=3?1.3:1.12)*10)/10});
@@ -2378,7 +2384,7 @@ var GARAGE=[
  {id:"aksahin",mdl:"as",n:"AK-ŞAHİN",cost:2300,ab:"blink",abn:"IŞINLAN",body:0xf2f2f6,acc:0x5a6a8a,glow:0x6ad0ff,stripe:0x2f6af0,flame:0x9fe8ff,spd:158,hnd:1.05,nit:4.5,accel:1,dur:.7,ng:1.5,dm:.67,arm:[2.7,3,2.9],perk:"Nitro ve küre kazancı %50 daha uzun itki"},
  {id:"ozel",ab:"slam",abn:"SES DALGASI",n:"Özel Dron",cost:300,body:0xff7a2e,acc:0xc85a1a,glow:0x2fd6ff,stripe:0xffffff,flame:0x6fd0ff,spd:158,hnd:1.18,nit:4.4,accel:1.1,dur:.5,shape:0,rshape:0,rcol:0xf26a1f}
 ];
-var SAVE="dronYarisiGaraj1",GFXN=["OTO","DÜŞÜK","YÜKSEK"],GK="dronYarisiHayalet2_",wallet=0,mrc=0,gmode="multi",rivalM=null,curField=8,owned=["sahin"],selId="sahin",totalLaps=0,recs={},trkId="vadi",upg={m:0,b:0,p:0},oup={m:0,b:0,p:0,a:0,z:0},cosOwn=[0],cosSel=0,des={sh:0,bc:0,rc:0,rs:0,o:{sh:[0],bc:[0,1,2],rc:[0,1,2],rs:[0]}},ghostOn=true,tt=false,ghostData=null,stars={},cpCount=0,starRes=null,tunNow=false,tunD=0,tunDa=false;
+var SAVE="dronYarisiGaraj1",GFXN=["OTO","DÜŞÜK","YÜKSEK"],GK="dronYarisiHayalet3_",wallet=0,mrc=0,gmode="multi",rivalM=null,curField=8,owned=["sahin"],selId="sahin",totalLaps=0,recs={},trkId="vadi",upg={m:0,b:0,p:0},oup={m:0,b:0,p:0,a:0,z:0},cosOwn=[0],cosSel=0,des={sh:0,bc:0,rc:0,rs:0,o:{sh:[0],bc:[0,1,2],rc:[0,1,2],rs:[0]}},ghostOn=true,tt=false,ghostData=null,stars={},cpCount=0,starRes=null,tunNow=false,tunD=0,tunDa=false;
 function totStars(){var n=0;for(var k in stars){var m=stars[k]|0;n+=(m&1)+((m>>1)&1)+((m>>2)&1)}return n}
 function starStr(m){return((m&1)?"★":"☆")+((m&2)?"★":"☆")+((m&4)?"★":"☆")}
 function goalsHtml(m){var mk=function(b,t){return'<span'+((m&b)?' class="ok"':'')+'><i class="s">'+((m&b)?"★":"☆")+'</i>'+t+'</span>'};return mk(1,"Podyum (ilk 3)")+mk(2,"Süre ≤ "+fmt(TRK.tgt))+mk(4,"3 Close Pass")}
@@ -2386,9 +2392,9 @@ function goalsTxt(m){var mk=function(b){return(m&b)?"★":"☆"};return mk(1)+" 
 var MODELS=[];var COS=[{n:"Standart",c:0,cost:0},{n:"Pembe",c:0xff4fd8,cost:120},{n:"Yeşil",c:0x4dff7a,cost:120},{n:"Altın",c:0xffd23a,cost:200},{n:"Kırmızı",c:0xff4a3a,cost:120},{n:"Beyaz",c:0xffffff,cost:200}],DCOL=[0xff7a2e,0xe84a4a,0xf2c230,0x4dff7a,0x2fd6ff,0x4a6bff,0xb48cff,0xff4fd8,0xffffff,0x2b3345],DCST={sh:[0,150,150,250],rs:[0,100,150,150],bc:[0,0,0,80,80,80,80,80,80,80],rc:[0,0,0,60,60,60,60,60,60,60]},DSHN=["Kutu","Keskin","Yuvarlak","Geniş"],DRSN=["Halka","Kalın","Kare","Altıgen"],UPC=[120,240,420,700],UPN={m:"MOTOR · hız",b:"BATARYA · nitro",p:"PERVANE · dönüş"};
 try{
   var sv=JSON.parse(localStorage.getItem(SAVE)||"null");
-  if(sv){wallet=sv.w|0;if(sv.o&&sv.o.length)owned=sv.o;if(sv.s)selId=sv.s;totalLaps=sv.tl|0;mrc=sv.mrc|0;if(sv.rec)recs=sv.rec;if(sv.trk)trkId=sv.trk;if(sv.ou)oup={m:sv.ou.m|0,b:sv.ou.b|0,p:sv.ou.p|0,a:sv.ou.a|0,z:sv.ou.z|0};if(sv.u)upg={m:sv.u.m|0,b:sv.u.b|0,p:sv.u.p|0};if(sv.co&&sv.co.length)cosOwn=sv.co;cosSel=sv.cs|0;if(sv.des&&sv.des.o){des=sv.des}if(sv.gq===1||sv.gq===2)gq=sv.gq;if(sv.gh===false)ghostOn=false;if(sv.tt)tt=true;if(sv.st&&typeof sv.st==="object")stars=sv.st}
+  if(sv){wallet=sv.w|0;if(sv.o&&sv.o.length)owned=sv.o;if(sv.s)selId=sv.s;totalLaps=sv.tl|0;mrc=sv.mrc|0;if(sv.rec&&sv.tv===2)recs=sv.rec;if(sv.trk)trkId=sv.trk;if(sv.ou)oup={m:sv.ou.m|0,b:sv.ou.b|0,p:sv.ou.p|0,a:sv.ou.a|0,z:sv.ou.z|0};if(sv.u)upg={m:sv.u.m|0,b:sv.u.b|0,p:sv.u.p|0};if(sv.co&&sv.co.length)cosOwn=sv.co;cosSel=sv.cs|0;if(sv.des&&sv.des.o){des=sv.des}if(sv.gq===1||sv.gq===2)gq=sv.gq;if(sv.gh===false)ghostOn=false;if(sv.tt)tt=true;if(sv.st&&typeof sv.st==="object")stars=sv.st}
 }catch(e){}
-function save(){try{localStorage.setItem(SAVE,JSON.stringify({w:wallet,o:owned,s:selId,tl:totalLaps,mrc:mrc,rec:recs,trk:TRK.id,gq:gq,des:des,u:upg,ou:oup,co:cosOwn,cs:cosSel,gh:ghostOn,tt:tt,st:stars}))}catch(e){}}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify({w:wallet,o:owned,s:selId,tl:totalLaps,mrc:mrc,rec:recs,trk:TRK.id,gq:gq,des:des,u:upg,ou:oup,co:cosOwn,cs:cosSel,gh:ghostOn,tt:tt,st:stars,tv:2}))}catch(e){}}
 GARAGE.forEach(function(g0){if(g0.mdl)MODELS.push(g0)});
 function gDef(id){for(var i=0;i<GARAGE.length;i++)if(GARAGE[i].id===id)return GARAGE[i];return GARAGE[0]}
 function disposeObj(o){o.traverse(function(x){if(x.geometry)x.geometry.dispose();if(x.material&&x.material.dispose)x.material.dispose()})}
@@ -2848,6 +2854,7 @@ function initDots(list,dots){
 (function(){var ov=$("ov");function sy(){document.body.classList.toggle("menu",!ov.hidden)}sy();new MutationObserver(sy).observe(ov,{attributes:true,attributeFilter:["hidden"]})})();
 $("gOpen").addEventListener("click",function(){openG("cs")});
 $("gOpen2").addEventListener("click",function(){openG("ce")});
+$("tOpen2").addEventListener("click",function(){openT("ce")});
 $("gBack").addEventListener("click",function(){showCard(cardFrom)});
 
 var TMAX=0;
@@ -2896,7 +2903,7 @@ $("nxt").addEventListener("click",function(){
   if(raceTrk&&raceTrk!==TRK)setTrack(raceTrk);
   resetRace();startCountdown();
 });
-$("tBack").addEventListener("click",function(){showCard(cardFrom)});
+$("tBack").addEventListener("click",function(){showCard(cardFrom==="ce"?"cs":cardFrom)});
 document.addEventListener("visibilitychange",function(){if(AC){try{if(document.hidden)AC.suspend();else if(!paused)AC.resume()}catch(e){}}if(document.hidden){save();clearInput();if(state==="race"||state==="countdown")setPause(true)}});
 
 /* ---------- Oyun durumu ---------- */
