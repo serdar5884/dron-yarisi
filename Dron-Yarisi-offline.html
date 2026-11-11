@@ -643,9 +643,9 @@ body.touch.racing #steer{animation:steerh 3.2s ease-out forwards}
         <li><b>Kamera</b><span><kbd>C</kbd> açıyı değiştirir (üstteki KAMERA tuşu da olur)</span></li>
         <li><b>Viraj</b><span>hızlandıkça seni dışarı iter, virajın içine doğru yönlendir</span></li>
       </ul></details>
-      <div class="btns"><button id="go" class="pri" type="button">UÇUŞA BAŞLA</button></div>
+      <div class="btns"><button id="go" class="pri" type="button">ÇOKLU OYUN</button></div>
       <div class="btns sec"><button id="tOpen" class="alt" type="button">Yol Seç</button><button id="gOpen" class="alt" type="button">Garaj</button></div>
-      <div class="btns"><button id="onl" class="alt onlb" type="button">Online Yarış</button></div>
+      <div class="btns sec"><button id="duel" class="alt" type="button">İkili Oyun</button><button id="onl" class="alt onlb" type="button">Online Yarış</button></div>
       <div class="btns"><button id="tttog" class="alt tg" type="button">ZAMAN TURU: KAPALI</button></div>
       <div class="btns sec"><button id="bkOpen" class="alt" type="button">Yedek Al / Yükle</button></div>
       </div>
@@ -2193,7 +2193,7 @@ var GARAGE=[
  {id:"aksahin",mdl:"as",n:"AK-ŞAHİN",cost:2300,ab:"blink",abn:"IŞINLAN",body:0xf2f2f6,acc:0x5a6a8a,glow:0x6ad0ff,stripe:0x2f6af0,flame:0x9fe8ff,spd:158,hnd:1.05,nit:4.5,accel:1,dur:.7,ng:1.5,dm:.67,arm:[2.7,3,2.9],perk:"Nitro ve küre kazancı %50 daha uzun itki"},
  {id:"ozel",ab:"slam",abn:"SES DALGASI",n:"Özel Dron",cost:300,body:0xff7a2e,acc:0xc85a1a,glow:0x2fd6ff,stripe:0xffffff,flame:0x6fd0ff,spd:158,hnd:1.18,nit:4.4,accel:1.1,dur:.5,shape:0,rshape:0,rcol:0xf26a1f}
 ];
-var SAVE="dronYarisiGaraj1",GFXN=["OTO","DÜŞÜK","YÜKSEK"],GK="dronYarisiHayalet2_",wallet=0,owned=["sahin"],selId="sahin",totalLaps=0,recs={},trkId="vadi",upg={m:0,b:0,p:0},oup={m:0,b:0,p:0,a:0,z:0},cosOwn=[0],cosSel=0,des={sh:0,bc:0,rc:0,rs:0,o:{sh:[0],bc:[0,1,2],rc:[0,1,2],rs:[0]}},ghostOn=true,tt=false,ghostData=null,stars={},cpCount=0,starRes=null,tunNow=false,tunD=0,tunDa=false;
+var SAVE="dronYarisiGaraj1",GFXN=["OTO","DÜŞÜK","YÜKSEK"],GK="dronYarisiHayalet2_",wallet=0,mrc=0,gmode="multi",rivalM=null,curField=8,owned=["sahin"],selId="sahin",totalLaps=0,recs={},trkId="vadi",upg={m:0,b:0,p:0},oup={m:0,b:0,p:0,a:0,z:0},cosOwn=[0],cosSel=0,des={sh:0,bc:0,rc:0,rs:0,o:{sh:[0],bc:[0,1,2],rc:[0,1,2],rs:[0]}},ghostOn=true,tt=false,ghostData=null,stars={},cpCount=0,starRes=null,tunNow=false,tunD=0,tunDa=false;
 function totStars(){var n=0;for(var k in stars){var m=stars[k]|0;n+=(m&1)+((m>>1)&1)+((m>>2)&1)}return n}
 function starStr(m){return((m&1)?"★":"☆")+((m&2)?"★":"☆")+((m&4)?"★":"☆")}
 function goalsHtml(m){var mk=function(b,t){return'<span'+((m&b)?' class="ok"':'')+'><i class="s">'+((m&b)?"★":"☆")+'</i>'+t+'</span>'};return mk(1,"Podyum (ilk 3)")+mk(2,"Süre ≤ "+fmt(TRK.tgt))+mk(4,"3 Close Pass")}
@@ -2201,9 +2201,9 @@ function goalsTxt(m){var mk=function(b){return(m&b)?"★":"☆"};return mk(1)+" 
 var MODELS=[];var COS=[{n:"Standart",c:0,cost:0},{n:"Pembe",c:0xff4fd8,cost:120},{n:"Yeşil",c:0x4dff7a,cost:120},{n:"Altın",c:0xffd23a,cost:200},{n:"Kırmızı",c:0xff4a3a,cost:120},{n:"Beyaz",c:0xffffff,cost:200}],DCOL=[0xff7a2e,0xe84a4a,0xf2c230,0x4dff7a,0x2fd6ff,0x4a6bff,0xb48cff,0xff4fd8,0xffffff,0x2b3345],DCST={sh:[0,150,150,250],rs:[0,100,150,150],bc:[0,0,0,80,80,80,80,80,80,80],rc:[0,0,0,60,60,60,60,60,60,60]},DSHN=["Kutu","Keskin","Yuvarlak","Geniş"],DRSN=["Halka","Kalın","Kare","Altıgen"],UPC=[120,240,420,700],UPN={m:"MOTOR · hız",b:"BATARYA · nitro",p:"PERVANE · dönüş"};
 try{
   var sv=JSON.parse(localStorage.getItem(SAVE)||"null");
-  if(sv){wallet=sv.w|0;if(sv.o&&sv.o.length)owned=sv.o;if(sv.s)selId=sv.s;totalLaps=sv.tl|0;if(sv.rec)recs=sv.rec;if(sv.trk)trkId=sv.trk;if(sv.ou)oup={m:sv.ou.m|0,b:sv.ou.b|0,p:sv.ou.p|0,a:sv.ou.a|0,z:sv.ou.z|0};if(sv.u)upg={m:sv.u.m|0,b:sv.u.b|0,p:sv.u.p|0};if(sv.co&&sv.co.length)cosOwn=sv.co;cosSel=sv.cs|0;if(sv.des&&sv.des.o){des=sv.des}if(sv.gq===1||sv.gq===2)gq=sv.gq;if(sv.gh===false)ghostOn=false;if(sv.tt)tt=true;if(sv.st&&typeof sv.st==="object")stars=sv.st}
+  if(sv){wallet=sv.w|0;if(sv.o&&sv.o.length)owned=sv.o;if(sv.s)selId=sv.s;totalLaps=sv.tl|0;mrc=sv.mrc|0;if(sv.rec)recs=sv.rec;if(sv.trk)trkId=sv.trk;if(sv.ou)oup={m:sv.ou.m|0,b:sv.ou.b|0,p:sv.ou.p|0,a:sv.ou.a|0,z:sv.ou.z|0};if(sv.u)upg={m:sv.u.m|0,b:sv.u.b|0,p:sv.u.p|0};if(sv.co&&sv.co.length)cosOwn=sv.co;cosSel=sv.cs|0;if(sv.des&&sv.des.o){des=sv.des}if(sv.gq===1||sv.gq===2)gq=sv.gq;if(sv.gh===false)ghostOn=false;if(sv.tt)tt=true;if(sv.st&&typeof sv.st==="object")stars=sv.st}
 }catch(e){}
-function save(){try{localStorage.setItem(SAVE,JSON.stringify({w:wallet,o:owned,s:selId,tl:totalLaps,rec:recs,trk:TRK.id,gq:gq,des:des,u:upg,ou:oup,co:cosOwn,cs:cosSel,gh:ghostOn,tt:tt,st:stars}))}catch(e){}}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify({w:wallet,o:owned,s:selId,tl:totalLaps,mrc:mrc,rec:recs,trk:TRK.id,gq:gq,des:des,u:upg,ou:oup,co:cosOwn,cs:cosSel,gh:ghostOn,tt:tt,st:stars}))}catch(e){}}
 GARAGE.forEach(function(g0){if(g0.mdl)MODELS.push(g0)});
 function gDef(id){for(var i=0;i<GARAGE.length;i++)if(GARAGE[i].id===id)return GARAGE[i];return GARAGE[0]}
 function disposeObj(o){o.traverse(function(x){if(x.geometry)x.geometry.dispose();if(x.material&&x.material.dispose)x.material.dispose()})}
@@ -2718,7 +2718,7 @@ var bendT=0,bendBad=false,wx="clear",lightT=8,combo=0,comboT=0,xp=0,hitCD=0,shak
 function setTrack(t){
   TRK=t;L=t.L;W=t.W;TH=THEMES[t.theme];
   applyTheme();buildWorld();chunkWorld();buildMini();
-  $("trkn").textContent=t.n;$("cTrk").innerHTML=t.n+" · "+LAPS+' tur<span class="x"> · 8 dron</span>';
+  $("trkn").textContent=t.n;$("cTrk").innerHTML=t.n+" · "+LAPS+' tur<span class="x"> · '+fieldCnt()+' dron</span>';
   try{var gg=JSON.parse(localStorage.getItem(GK+t.id)||"null");ghostData=gg&&gg.d&&gg.d.length>20?gg:null}catch(e){ghostData=null}
   resetRace();save();
 }
@@ -2727,22 +2727,41 @@ function setWx(v){
   wx=v;$("rain").style.opacity=wx==="clear"?0:(wx==="storm"?.9:.55);
   $("trkn").textContent=TRK.n+(wx==="storm"?" · FIRTINA":wx==="rain"?" · YAĞMUR":"");
 }
+function fieldCnt(){return online&&NET.cnt?NET.cnt:tt?1:gmode==="duel"?2:(mrc<3?5:8)}
+function pickRival(){
+  var p=player,best=null,bs=1e9;
+  MODELS.forEach(function(m){
+    if(m.id===selId)return;
+    var sc=Math.abs(m.spd-p.spd)/12+Math.abs((m.hnd||1)-p.hnd)*3+Math.abs((m.accel||1)-(p.acc||1))*2+(p.d&&m.ab===p.d.ab?0:.4)+Math.random()*.25;
+    if(sc<bs){bs=sc;best=m}
+  });
+  return best||MODELS[0];
+}
+var actIds=[1,2,3,4,5,6,7];
 function resetRace(){
-  var ids=[1,2,3,4,5,6,7].sort(function(){return Math.random()-.5}),order=[];
-  ids.slice(0,4).forEach(function(id){order.push(id)});order.splice(4,0,0);ids.slice(4).forEach(function(id){order.push(id)});
+  var ids=[1,2,3,4,5,6,7].sort(function(){return Math.random()-.5}),order=[],full=(tt||online);
+  curField=fieldCnt();rivalM=null;
+  if(full){ids.slice(0,4).forEach(function(id){order.push(id)});order.splice(4,0,0);ids.slice(4).forEach(function(id){order.push(id)});actIds=ids.slice()}
+  else{
+    actIds=ids.slice(0,Math.max(0,curField-1));order=actIds.slice();
+    order.splice(gmode==="duel"?0:(curField>=8?4:2),0,0);
+    if(gmode==="duel")rivalM=pickRival();
+  }
+  ids.forEach(function(id){if(actIds.indexOf(id)<0){var ro=racers[id];ro.s=-400;ro.u=0;ro.v=0}});
   order.forEach(function(id,k){
     var r=racers[id],row=(k/2)|0,col=k%2;
     r.s=-10-row*13-(col?4:0);r.u=col?W*.22:-W*.22;r.v=0;r.ul=0;r.steer=0;r.boosting=false;r.tb=0;r.nitro=35;r.bT=0;r.next=RR(5,12);
-    if(id){var mo=MODELS[(Math.random()*MODELS.length)|0];setRacerModel(r,mo);r.base=RR(TRK.ai[0],TRK.ai[1])*(mo.spd/156);r.lane=RR(-W*.3,W*.3);r.amp=RR(2,W*.25)}
+    if(id){var mo=rivalM||MODELS[(Math.random()*MODELS.length)|0];setRacerModel(r,mo);r.base=RR(TRK.ai[0],TRK.ai[1])*(mo.spd/156)*(rivalM?clamp(player.spd/mo.spd,.96,1.05):1);r.lane=RR(-W*.3,W*.3);r.amp=RR(2,W*.25)}
   });
   coins=0;bonusGot=0;bestLap=0;curLap=1;raceT=0;lapStart=0;lastN=99;place=1;prevPs=-50;finishedTime=0;newRec=false;
   combo=0;comboT=0;xp=0;hitCD=0;shakeT=0;bendT=0;bendBad=false;cpCount=0;starRes=null;$("fin").className="";if(flyM){flyM.visible=false}fly.on=false;fly.cd=8;sgates.forEach(function(g){g.l=0});tgates.forEach(function(g){g.l=0});traps.length=0;grec=[];gAcc=0;waveT=0;lightT=RR(5,10);
-  racers.forEach(function(r){r.dr=0;r.shd=0;r.shq=1;r.wob=0;r.prel=null;r.pcd=0;r.lock=false;r.abT=0;r.perf=0;r.ult=0;r.emp=1;r.empT=20;r.dmg=0;r.smk=0;r.off=(tt||online)&&r.i>0;if(!online)r.net=false});
+  racers.forEach(function(r){r.dr=0;r.shd=0;r.shq=1;r.wob=0;r.prel=null;r.pcd=0;r.lock=false;r.abT=0;r.perf=0;r.ult=0;r.emp=1;r.empT=20;r.dmg=0;r.smk=0;r.off=r.i>0&&(tt||online||actIds.indexOf(r.i)<0);if(!online)r.net=false});
   wxCyc=Math.random()<.4;wxTimer=RR(14,24);
   wx=wxCyc&&Math.random()<.6?(Math.random()<.4?"storm":"rain"):"clear";
   $("rain").style.opacity=wx==="clear"?0:(wx==="storm"?.9:.55);
   var wl=wx==="storm"?" · FIRTINA":wx==="rain"?" · YAĞMUR":"";
-  $("trkn").textContent=TRK.n+wl;$("cTrk").innerHTML=TRK.n+wl+" · "+LAPS+" tur"+'<span class="x">'+(tt?" · zaman turu":online?" · online":" · 8 dron")+"</span>";
+  $("trkn").textContent=TRK.n+wl;$("cTrk").innerHTML=TRK.n+wl+" · "+LAPS+" tur"+'<span class="x">'+(tt?" · zaman turu":online?" · online":gmode==="duel"?" · ikili oyun"+(rivalM?" · rakip "+rivalM.n:""):" · "+curField+" dron")+"</span>";
+  if(!online)$("posN").textContent="/"+curField;
   updToggles();
   $("cGoals").innerHTML=tt?"<span>Zaman turunda yıldız kazanılmaz</span>":goalsHtml(stars[TRK.id]|0);
   resetPickups();
@@ -2758,7 +2777,9 @@ function startCountdown(){tilt.cal=true;
   openBefore=TRACKS.filter(function(t){return totStars()>=t.stars}).length;
   $("ov").hidden=true;cd=0;state="countdown";
 }
-$("go").addEventListener("click",startCountdown);
+function setMode(m){if(gmode!==m||(m==="multi"&&state==="menu")){gmode=m;resetRace()}}
+$("go").addEventListener("click",function(){setMode("multi");startCountdown()});
+$("duel").addEventListener("click",function(){setMode("duel");startCountdown();if(rivalM)floatTxt("RAKİP: "+rivalM.n,"g")});
 $("again").addEventListener("click",function(){if(state==="countdown"||state==="race")return;if(online){netToLobby();return}if(contTrk&&contTrk!==TRK)setTrack(contTrk);resetRace();startCountdown()});
 function countUp(e,to,f,delay){
   var t0=null,dur=900;e.textContent=f(0);
@@ -2766,7 +2787,7 @@ function countUp(e,to,f,delay){
   requestAnimationFrame(st);
 }
 function showEnd(){
-  $("ePl").textContent=place+" / "+(online&&NET.cnt?NET.cnt:N);
+  $("ePl").textContent=place+" / "+(online&&NET.cnt?NET.cnt:curField);
   $("eB").textContent=bestLap?fmt(bestLap):"--";
   countUp($("eT"),finishedTime,fmt,0);countUp($("eC"),coins+bonusGot,function(v){return Math.round(v)+"  (bakiye "+wallet+")"},.15);
   $("eh").textContent=place===1?"BİRİNCİSİN!":"YARIŞ BİTTİ";
@@ -2959,9 +2980,10 @@ function step(dt){
     if(state==="race"&&p.s>=LAPS*L){
       state="finish";finishedTime=raceT;NET.fin=finishedTime;NET.ph="fin";place=rank();
       var sm0=stars[TRK.id]|0,sm1=sm0;
-      if(!tt&&!online){if(place<=3)sm1|=1;if(finishedTime<=TRK.tgt)sm1|=2;if(cpCount>=3)sm1|=4;stars[TRK.id]=sm1}
+      if(!tt&&!online&&gmode==="multi")mrc++;
+      if(!tt&&!online&&gmode!=="duel"){if(place<=3)sm1|=1;if(finishedTime<=TRK.tgt)sm1|=2;if(cpCount>=3)sm1|=4;stars[TRK.id]=sm1}
       starRes={o:sm0,m:sm1};
-      bonusGot=Math.round((tt?20:place===1?70:place===2?40:place===3?25:8)*TRK.mult);wallet+=bonusGot;
+      bonusGot=Math.round((tt?20:place===1?70:place===2?40:place===3?25:8)*TRK.mult*(gmode==="duel"&&!tt&&!online?.5:curField<8?.8:1));wallet+=bonusGot;
       if(!online&&(!recs[TRK.id]||finishedTime<recs[TRK.id])){recs[TRK.id]=finishedTime;newRec=true;ghostData={t:finishedTime,d:grec.slice()};try{localStorage.setItem(GK+TRK.id,JSON.stringify(ghostData))}catch(e){}}
       save();
       msg(place===1?"1. SIRA!":place+". SIRA","go");beep(990,.6,"triangle",.1);
