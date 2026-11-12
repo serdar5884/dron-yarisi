@@ -137,9 +137,6 @@ body.touch .abs{display:none}
 .tb.on{transform:scale(.92);background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.45),rgba(var(--tc),.55))}
 #tB{left:14px;bottom:14px;width:calc(var(--b)*1.6);height:calc(var(--b)*1.6);font-size:calc(var(--b)*.24)}
 #tB svg{width:calc(var(--b)*.62);height:calc(var(--b)*.62);fill:currentColor}
-#shp{position:absolute;top:13%;left:50%;transform:translateX(-50%);padding:.35em 1em;border-radius:8px;background:rgba(200,20,20,.85);color:#fff;font:800 clamp(14px,3.2vw,26px) var(--f);font-style:italic;letter-spacing:.06em;opacity:0;pointer-events:none;z-index:6;white-space:nowrap;border:2px solid #ffd2d2;transition:opacity .15s}
-#shp.on{opacity:1;animation:shpa .35s infinite alternate}
-@keyframes shpa{to{background:rgba(255,130,20,.92)}}
 #tS{--tc:70,170,255;left:calc(14px + var(--b)*1.6 + var(--g));bottom:14px}
 #tA{--tc:190,110,255;left:14px;bottom:calc(14px + var(--b)*1.6 + var(--g))}
 #tE{--tc:255,100,60;left:calc(14px + var(--b)*1.6 + var(--g));bottom:calc(14px + var(--b) + var(--g) + 14px)}
@@ -629,7 +626,6 @@ body.touch.racing #steer{animation:steerh 3.2s ease-out forwards}
   <div id="pz" hidden>DURAKLATILDI<small>devam etmek için dokun · P</small></div>
   <div id="fin">FİNAL TURU!</div>
   <div id="msg"></div>
-  <div id="shp"></div>
   <div id="ov">
     <div class="card" id="cs">
       <div class="hd">
@@ -787,24 +783,24 @@ THEMES.canyon=Object.assign({},THEMES.desert,{nobld:true,tr:0,fog:0xe6b87a,fn:50
 THEMES.accel=Object.assign({},THEMES.abyss,{fog:0x0c1424,fn:10,ff:360,top:0x050a14,hor:0x0c1424,hg:0x203040,hs:0xaaccff,hi:1,grass:0x3a4654,grassE:0x04080c,edge:0xff8a2a,curb:0xffa050,bar:[0xff8a2a,0x20303a,0xff8a2a,0x20303a],gA:0xff8a2a,gB:0x2fe8ff,dust:{c:0x9fd0ff,n:70,op:.3,y:[1,24],sc:[40,90,6,14]}});
 THEMES.cyber2=Object.assign({},THEMES.abyss,{fog:0x1a0a40,fn:12,ff:520,top:0x120430,hor:0x3a1272,hg:0x3a2a6a,hs:0xe8b8ff,grass:0x1a1040,grassE:0x08031a,edge:0xff2fd0,curb:0xff6af0,bar:[0xff2fd0,0x1a1238,0x2fe8ff,0x1a1238],gA:0xff2fd0,gB:0x2fe8ff,dust:{c:0xff9af0,n:70,op:.3,y:[1,40],sc:[40,100,6,14]}});
 var TRACKS=[
- {id:"vadi",n:"Gündüz Parkı",L:4900,W:30,theme:"day",a:[[90,1,0],[40,3,1.2],[16,5,.4],[7,7,2.1]],drift:1.5,ai:[144,157],stars:0,mult:1,seed:101,lv:1},
- {id:"gunbatimi",n:"Gün Batımı Kanyonu",L:5600,W:30,theme:"dusk",a:[[110,1,.6],[55,3,2],[26,5,1.1],[12,7,.3],[5,9,2.6]],drift:1.6,ai:[148,161],stars:2,mult:1.3,seed:202,lv:2},
- {id:"neon",sh:[[.5,-42,58]],n:"Gece Neon Şehri",L:5600,W:28,theme:"night",a:[[115,1,2.2],[62,3,.4],[34,5,1.7],[17,7,.9],[8,9,2.2]],drift:1.7,ai:[152,165],stars:5,mult:1.6,seed:303,lv:3},
- {id:"sis",sh:[[.35,-44,56],[.75,44,56]],n:"Sisli Dağ",L:6300,W:26,theme:"fog",a:[[130,1,1],[70,3,2.7],[38,5,.2],[19,7,1.4],[9,9,.7],[4,11,1.9]],drift:1.8,ai:[156,169],stars:8,mult:2,seed:404,lv:4},
- {id:"kabus",sh:[[.25,-46,54],[.6,46,54],[.85,-46,54]],n:"Kâbus Gecesi",L:6300,W:24,theme:"ember",a:[[140,1,.3],[78,3,1.5],[44,5,2.9],[22,7,.6],[11,9,1.8],[5,11,.2]],drift:1.9,ai:[160,173],stars:11,mult:2.5,seed:505,lv:5},
- {id:"col",sh:[[.3,48,54],[.7,-48,54]],n:"Çöl Fırtınası",L:5600,W:26,theme:"desert",a:[[124,1,.8],[71,3,.2],[40,5,2.4],[20,7,1.1],[10,9,.5],[5,11,2.8]],drift:2,ai:[164,177],stars:14,mult:3,seed:606,lv:5},
- {id:"buz",sh:[[.3,-46,54],[.7,46,54]],n:"Buzul Hattı",L:6300,W:24,theme:"ice",a:[[122,1,2],[73,3,.9],[42,5,.3],[23,7,2.2],[11,9,1.3],[6,11,.1]],drift:2.1,ai:[168,181],stars:17,mult:3.5,seed:707,lv:6},
- {id:"siber",sh:[[.2,-48,52],[.5,48,52],[.8,-48,52]],n:"Siber Şehir",L:6720,W:22,theme:"cyber",a:[[125,1,1.4],[75,3,2.6],[45,5,1.2],[23,7,.2],[12,9,2.4],[6,11,1.1],[3,13,.6]],drift:2.2,ai:[172,185],stars:20,mult:4,seed:808,lv:7},
+ {id:"vadi",dp:[[.35,60,380,120]],n:"Gündüz Parkı",L:4900,W:30,theme:"day",a:[[90,1,0],[40,3,1.2],[16,5,.4],[7,7,2.1]],drift:1.5,ai:[144,157],stars:0,mult:1,seed:101,lv:1},
+ {id:"gunbatimi",dp:[[.55,60,380,100]],n:"Gün Batımı Kanyonu",L:5600,W:30,theme:"dusk",a:[[110,1,.6],[55,3,2],[26,5,1.1],[12,7,.3],[5,9,2.6]],drift:1.6,ai:[148,161],stars:2,mult:1.3,seed:202,lv:2},
+ {id:"neon",dp:[[.3,65,400,120]],n:"Gece Neon Şehri",L:5600,W:28,theme:"night",a:[[115,1,2.2],[62,3,.4],[34,5,1.7],[17,7,.9],[8,9,2.2]],drift:1.7,ai:[152,165],stars:5,mult:1.6,seed:303,lv:3},
+ {id:"sis",dp:[[.55,65,400,120]],n:"Sisli Dağ",L:6300,W:26,theme:"fog",a:[[130,1,1],[70,3,2.7],[38,5,.2],[19,7,1.4],[9,9,.7],[4,11,1.9]],drift:1.8,ai:[156,169],stars:8,mult:2,seed:404,lv:4},
+ {id:"kabus",dp:[[.4,70,420,140]],n:"Kâbus Gecesi",L:6300,W:24,theme:"ember",a:[[140,1,.3],[78,3,1.5],[44,5,2.9],[22,7,.6],[11,9,1.8],[5,11,.2]],drift:1.9,ai:[160,173],stars:11,mult:2.5,seed:505,lv:5},
+ {id:"col",dp:[[.25,65,400,120],[.7,50,320,80]],n:"Çöl Fırtınası",L:5600,W:26,theme:"desert",a:[[124,1,.8],[71,3,.2],[40,5,2.4],[20,7,1.1],[10,9,.5],[5,11,2.8]],drift:2,ai:[164,177],stars:14,mult:3,seed:606,lv:5},
+ {id:"buz",dp:[[.5,70,420,120]],n:"Buzul Hattı",L:6300,W:24,theme:"ice",a:[[122,1,2],[73,3,.9],[42,5,.3],[23,7,2.2],[11,9,1.3],[6,11,.1]],drift:2.1,ai:[168,181],stars:17,mult:3.5,seed:707,lv:6},
+ {id:"siber",dp:[[.35,70,420,130],[.8,50,320,80]],n:"Siber Şehir",L:6720,W:22,theme:"cyber",a:[[125,1,1.4],[75,3,2.6],[45,5,1.2],[23,7,.2],[12,9,2.4],[6,11,1.1],[3,13,.6]],drift:2.2,ai:[172,185],stars:20,mult:4,seed:808,lv:7},
  {id:"deniz",n:"Okyanus Köprüsü",L:5200,W:28,theme:"sea",a:[[110,1,.3],[52,3,1.9],[24,5,.6],[10,7,2.3],[5,9,1.2]],drift:1.8,ai:[158,171],stars:9,mult:2.2,seed:909,lv:4,wt:{H:46,bd:-9,s:[[.14,.08],[.5,.07],[.8,.08]],ramp:380,lk:0,isl:1}},
  {id:"gol",n:"Göller Diyarı",L:5000,W:28,theme:"lake",a:[[100,1,1.1],[58,3,.5],[28,5,2.1],[14,7,.8],[7,9,2.5]],drift:1.7,ai:[156,169],stars:12,mult:2.6,seed:1010,lv:5,wt:{H:10,bd:-9,s:[[.3,.035],[.72,.04]],ramp:260,lk:.5,isl:0}},
- {id:"korfez",sh:[[.4,-44,58],[.8,44,58]],n:"Çöl Körfezi",L:5200,W:28,theme:"gulf",a:[[112,1,.7],[60,3,2.2],[30,5,.3],[15,7,1.6],[7,9,.9]],drift:1.9,ai:[160,173],stars:15,mult:3,seed:1111,lv:6,wt:{H:44,bd:-9,s:[[.27,.09],[.68,.1]],ramp:380,lk:.22,isl:1}},
+ {id:"korfez",n:"Çöl Körfezi",L:5200,W:28,theme:"gulf",a:[[112,1,.7],[60,3,2.2],[30,5,.3],[15,7,1.6],[7,9,.9]],drift:1.9,ai:[160,173],stars:15,mult:3,seed:1111,lv:6,wt:{H:44,bd:-9,s:[[.27,.09],[.68,.1]],ramp:380,lk:.22,isl:1}},
  {id:"tunel",n:"Derin Mavi Tüneli",L:5000,W:28,theme:"abyss",a:[[116,1,.9],[64,3,2.0],[34,5,.4],[17,7,1.7],[8,9,.6]],drift:1.9,ai:[160,173],stars:10,mult:2.8,seed:1212,lv:5,tb:1,dp:[[.5,50,110,170]]},
- {id:"hyper",sh:[[.45,40,72],[.9,-40,72]],n:"Sualtı Hyper-Tube",L:5000,W:30,theme:"abyss",a:[[130,1,.4],[66,2,1.4],[22,4,2.1]],drift:1.6,ai:[158,171],stars:10,mult:3,seed:1313,lv:5,tb:2,dp:[[.2,45,110,160],[.62,60,120,120]],zn:[{k:"leak",s:.12},{k:"leak",s:.27},{k:"crack",s:.45},{k:"leak",s:.6},{k:"crack",s:.74},{k:"leak",s:.88}]},
+ {id:"hyper",n:"Sualtı Hyper-Tube",L:5000,W:30,theme:"abyss",a:[[130,1,.4],[66,2,1.4],[22,4,2.1]],drift:1.6,ai:[158,171],stars:10,mult:3,seed:1313,lv:5,tb:2,dp:[[.2,45,110,160],[.62,60,120,120]],zn:[{k:"leak",s:.12},{k:"leak",s:.27},{k:"crack",s:.45},{k:"leak",s:.6},{k:"crack",s:.74},{k:"leak",s:.88}]},
  {id:"strat",n:"Stratosfer Koridoru",L:5400,W:34,theme:"sky",a:[[150,1,1.1],[60,2,.3],[24,3,1.9]],drift:1.5,ai:[158,171],stars:10,mult:3,seed:1414,lv:4,sk:1,dp:[[.36,60,130,180]],eb:300,cl:[30,72,112],zn:[{k:"wind",s:.07,l:350,a:.3,u0:-.55,u1:.55},{k:"turb",s:.2,l:220,g:24},{k:"wind",s:.3,l:350,a:.3,u0:-1,u1:.1},{k:"turb",s:.43,l:220,g:24},{k:"wind",s:.52,l:300,a:.45,u0:.45,u1:1,g:30},{k:"wind",s:.66,l:350,a:.3,u0:-.1,u1:1},{k:"turb",s:.8,l:220,g:24},{k:"wind",s:.88,l:350,a:.3,u0:-.55,u1:.55}]},
- {id:"kanyon",sh:[[.1,-46,52],[.5,50,52],[.78,-46,52]],n:"Sonsuz Çöl Kanyonları",L:5000,W:32,theme:"canyon",a:[[118,1,.9],[66,2,2.4],[34,4,.5],[16,6,1.3]],drift:1.9,ai:[160,173],stars:10,mult:3,seed:1515,lv:6,dp:[[.3,50,110,140],[.74,45,100,100]],cy:{g:[.18,.4,.62,.84],h:130},scr:1,zn:[{k:"storm",s:.1,l:450},{k:"gust",s:.2,l:70,d:1},{k:"storm",s:.34,l:450},{k:"gust",s:.42,l:70,d:-1},{k:"storm",s:.6,l:450},{k:"gust",s:.64,l:70,d:1},{k:"gust",s:.86,l:70,d:-1}]},
- {id:"hizlandirici",n:"Parçacık Hızlandırıcı",L:5000,W:30,theme:"accel",a:[[165,1,.2],[34,3,1],[12,5,.4]],drift:1.8,ai:[160,173],stars:10,mult:3,seed:1616,lv:6,tb:3,scr:1,rg:{st:260,gap:210},zn:[{k:"arc",s:.2},{k:"arc",s:.38},{k:"arc",s:.55},{k:"arc",s:.7},{k:"arc",s:.85}]},
- {id:"cyber2",sh:[[.3,40,70],[.65,-40,70],[.9,40,70]],n:"Gece Otobanı Işık Tüpleri",L:5000,W:32,theme:"cyber2",a:[[128,1,1.1],[70,3,2.6],[36,5,.9],[16,7,1.6]],drift:2,ai:[164,177],stars:10,mult:3,seed:1717,lv:7,tb:4,onc:7},
- {id:"kapadokya",sh:[[.22,-44,56],[.52,48,56],[.84,-44,56]],n:"Kapadokya Vadisi",L:4800,W:32,theme:"cappa",a:[[120,1,.5],[64,2,1.9],[30,4,.8],[14,6,1.4]],drift:1.7,ai:[152,165],stars:6,mult:2,seed:1818,lv:3,cp:1,dp:[[.28,40,100,150],[.7,50,110,120]]}
+ {id:"kanyon",n:"Sonsuz Çöl Kanyonları",L:5000,W:32,theme:"canyon",a:[[118,1,.9],[66,2,2.4],[34,4,.5],[16,6,1.3]],drift:1.9,ai:[160,173],stars:10,mult:3,seed:1515,lv:6,dp:[[.3,50,110,140],[.74,45,100,100]],cy:{g:[.18,.4,.62,.84],h:130},scr:1,zn:[{k:"storm",s:.1,l:450},{k:"gust",s:.2,l:70,d:1},{k:"storm",s:.34,l:450},{k:"gust",s:.42,l:70,d:-1},{k:"storm",s:.6,l:450},{k:"gust",s:.64,l:70,d:1},{k:"gust",s:.86,l:70,d:-1}]},
+ {id:"hizlandirici",dp:[[.45,60,380,100]],n:"Parçacık Hızlandırıcı",L:5000,W:30,theme:"accel",a:[[165,1,.2],[34,3,1],[12,5,.4]],drift:1.8,ai:[160,173],stars:10,mult:3,seed:1616,lv:6,tb:3,scr:1,rg:{st:260,gap:210},zn:[{k:"arc",s:.2},{k:"arc",s:.38},{k:"arc",s:.55},{k:"arc",s:.7},{k:"arc",s:.85}]},
+ {id:"cyber2",dp:[[.5,65,400,120]],n:"Gece Otobanı Işık Tüpleri",L:5000,W:32,theme:"cyber2",a:[[128,1,1.1],[70,3,2.6],[36,5,.9],[16,7,1.6]],drift:2,ai:[164,177],stars:10,mult:3,seed:1717,lv:7,tb:4,onc:7},
+ {id:"kapadokya",n:"Kapadokya Vadisi",L:4800,W:32,theme:"cappa",a:[[120,1,.5],[64,2,1.9],[30,4,.8],[14,6,1.4]],drift:1.7,ai:[152,165],stars:6,mult:2,seed:1818,lv:3,cp:1,dp:[[.28,40,100,150],[.7,50,110,120]]}
 ];
 (function(){
   var OR=["vadi","gunbatimi","kapadokya","deniz","gol","strat","neon","hyper","tunel","sis","korfez","kanyon","col","kabus","hizlandirici","buz","cyber2","siber"],LV=[1,2,2,3,3,4,4,5,5,5,6,6,7,7,7,8,8,9],MU=[1,1.3,1.6,1.9,2.2,2.5,2.8,3.1,3.4,3.7,4,4.3,4.6,4.9,5.2,5.5,5.8,6.1];
@@ -832,12 +828,9 @@ var TRACKS=[
   });
 })();
 var TRK=TRACKS[0],TH=THEMES.day;
-function shK(T,s,n){var h=T.sh;if(!h)return 0;var L0=T.L,ss=((s%L0)+L0)%L0,r=0,i,c,w,A,x,g;for(i=0;i<h.length;i++){c=h[i][0]*L0;A=h[i][1];w=h[i][2];x=ss-c;if(x>4*w||x<-4*w)continue;g=A*Math.exp(-x*x/(w*w));r+=n===0?g:n===1?-2*x/(w*w)*g:g*(4*x*x/(w*w*w*w)-2/(w*w))}return r}
-function shNear(s,pre,post){var T=TRK,h=T.sh;if(!h)return null;var ss=((s%T.L)+T.L)%T.L,i,c;for(i=0;i<h.length;i++){c=h[i][0]*T.L;if(ss>=c-pre&&ss<=c+post)return h[i]}return null}
-function shIn(s){var T=TRK,h=T.sh;if(!h)return false;var ss=((s%T.L)+T.L)%T.L,i,c;for(i=0;i<h.length;i++){c=h[i][0]*T.L;if(Math.abs(ss-c)<h[i][2]*1.25)return true}return false}
-function clT(T,s){var t=s/T.L*TAU,r=0,a=T.a;for(var i=0;i<a.length;i++)r+=a[i][0]*Math.sin(a[i][1]*t+a[i][2]);return r+shK(T,s,0)}
-function dclT(T,s){var t=s/T.L*TAU,k=TAU/T.L,r=0,a=T.a;for(var i=0;i<a.length;i++)r+=a[i][0]*a[i][1]*Math.cos(a[i][1]*t+a[i][2]);return r*k+shK(T,s,1)}
-function d2clT(T,s){var t=s/T.L*TAU,k=TAU/T.L,r=0,a=T.a;for(var i=0;i<a.length;i++)r-=a[i][0]*a[i][1]*a[i][1]*Math.sin(a[i][1]*t+a[i][2]);return r*k*k+shK(T,s,2)}
+function clT(T,s){var t=s/T.L*TAU,r=0,a=T.a;for(var i=0;i<a.length;i++)r+=a[i][0]*Math.sin(a[i][1]*t+a[i][2]);return r}
+function dclT(T,s){var t=s/T.L*TAU,k=TAU/T.L,r=0,a=T.a;for(var i=0;i<a.length;i++)r+=a[i][0]*a[i][1]*Math.cos(a[i][1]*t+a[i][2]);return r*k}
+function d2clT(T,s){var t=s/T.L*TAU,k=TAU/T.L,r=0,a=T.a;for(var i=0;i<a.length;i++)r-=a[i][0]*a[i][1]*a[i][1]*Math.sin(a[i][1]*t+a[i][2]);return r*k*k}
 function maxK(T){var m=0;for(var s=0;s<T.L;s+=30){var d=dclT(T,s);m=Math.max(m,Math.abs(d2clT(T,s)/(1+d*d)))}return m}
 function cl(s){return clT(TRK,s)}
 function dcl(s){return dclT(TRK,s)}
@@ -1975,8 +1968,6 @@ function buildZones(){
 function circD(a,b){var d=Math.abs((((a%L)+L)%L)-(((b%L)+L)%L));return d>L/2?L-d:d}
 function updZones(dt){
   var p=player;
-  var shE=$("shp");
-  if(shE){var sw=state==="race"&&TRK.sh?shNear(p.s,450,25):null;if(sw){var tx="DİKKAT · KESKİN DÖNÜŞ "+(sw[1]>0?"▶":"◀");if(shE.textContent!==tx)shE.textContent=tx;shE.className="on"}else if(shE.className)shE.className=""}
   if(leakEl&&state!=="race")leakEl.style.opacity="0";
   if(TRK.tb===2||TRK.tb===1){if(!revN&&AC&&engG)try{var cv=AC.createConvolver(),n2=AC.sampleRate*.9,bf=AC.createBuffer(2,n2,AC.sampleRate),c2,q;for(c2=0;c2<2;c2++){var d=bf.getChannelData(c2);for(q=0;q<n2;q++)d[q]=(Math.random()*2-1)*Math.pow(1-q/n2,2.6)}cv.buffer=bf;var wg=AC.createGain();wg.gain.value=0;engG.connect(cv);cv.connect(wg);wg.connect(AC.destination);revN=wg}catch(e){}
     if(revN)revN.gain.value=TRK.tb===2?.55:.3}
@@ -3142,7 +3133,6 @@ function showEnd(){
 }
 
 function stepPlayer(p,dt,ctl){
-  if(p.cc>0)p.cc-=dt;if(p.spin>0)p.spin=Math.max(0,p.spin-dt*1.1);
   if(p.fl){fallStep(p,dt);return}
   if(tp1&&!tp1.drag)updTouchSteer();
   var steerIn=0,wantB=false,brake=false;
@@ -3183,15 +3173,9 @@ function fallStep(r,dt){
   r.v+=((t<T1+Tu?45:95)-r.v)*Math.min(1,dt*2.5);r.s+=r.v*dt;
   if(t>=T1+Tu+Tr){r.fl=null;r.u=f.side*(lim-6);r.ul=0;r.wob=.5;r.dmg=2;r.flc=tNow+1.5}
 }
-function crashP(r,side){
-  if(state!=="race"||r.cc>0||r.shd>0)return;
-  r.cc=1.6;r.v*=.35;r.ul=0;r.wob=1.6;r.dmg=3;r.spin=1;shakeT=Math.max(shakeT,.6);buzz(160);msg("KAZA!","sm");if(combo>1)floatTxt("KOMBO KIRILDI","r");combo=0;comboT=0;beep(90,.5,"sawtooth",.15);
-  var v=ppos();impactFx(v.x,v.y,v.z);r.u=side*(W/2-6);
-}
 function wall(r,dt){
   var lim=W/2-.2,sl=r.me&&r.shd>0?0:.7*(1-(r.res||0));
   if(r.me&&TRK.wt&&!r.fl&&Math.abs(r.ul)>9&&wnS(r.s)>.6){if(r.u>lim&&r.ul>0){startFall(r,1);return}if(r.u<-lim&&r.ul<0){startFall(r,-1);return}}
-  if(r.me&&TRK.sh&&r.v>75&&!(r.cc>0)&&shIn(r.s)&&((r.u>lim&&r.ul>=0)||(r.u<-lim&&r.ul<=0))){crashP(r,r.u>0?-1:1);if(r.cc>0)return}
   if(r.u>lim){r.u=lim;if(r.ul>0)r.ul*=-.25;r.v*=1-sl*dt;if(r.me)scrape(1)}
   else if(r.u<-lim){r.u=-lim;if(r.ul<0)r.ul*=-.25;r.v*=1-sl*dt;if(r.me)scrape(-1)}
 }
@@ -3252,7 +3236,7 @@ function stepAI(r,dt){
   if(r.next<0){if(r.nitro>=35&&r.bT<=0)r.bT=RR(1.6,3.2);r.next=RR(2.2,5)*(gap<-120?.5:1)}
   var useN=r.bT>0&&r.nitro>1;
   if(useN){r.bT-=dt;r.nitro=Math.max(0,r.nitro-34*dt)}else{r.bT=0;r.nitro=Math.min(100,r.nitro+5*dt)}
-  var tgt=r.base*(1+rub)*(useN?1.2:1)*(1-elevD(r.s)*.8)*(TRK.sh&&shNear(r.s,170,60)?.72:1);r.boosting=useN;
+  var tgt=r.base*(1+rub)*(useN?1.2:1)*(1-elevD(r.s)*.8);r.boosting=useN;
   r.v+=clamp(tgt-r.v,-60*dt,48*dt);
   var tu=r.lane+Math.sin(tNow*r.fr+r.ph)*r.amp;
   for(var j=0;j<N;j++){var o=racers[j];if(o===r)continue;var ds=o.s-r.s;if(ds>0&&ds<26&&Math.abs(o.u-r.u)<6.5)tu+=(r.u>=o.u?1:-1)*7}
@@ -3646,7 +3630,7 @@ function render(dt){
     var vv=clamp(r.v/220,0,1);
     r.m.rotation.y=head(sr)-r.ul*.012;
     var bq0=r.bq||0;r.m.rotation.x=.04-Math.atan(elevD(sr))*.9+vv*.14+bq0*.06+(r.me?clamp(camKV*.006,-.08,.1):0);
-    r.m.rotation.z=clamp(r.ul*.02,-.5,.5);if(r.spin>0)r.m.rotation.y+=r.spin*Math.PI*4;if(r.fl){r.m.rotation.z+=r.fl.rot;r.m.rotation.x+=r.fl.rx}
+    r.m.rotation.z=clamp(r.ul*.02,-.5,.5);if(r.fl){r.m.rotation.z+=r.fl.rot;r.m.rotation.x+=r.fl.rx}
     if(r.wob>0){r.m.rotation.z+=Math.sin(tNow*26)*r.wob*.16;r.m.rotation.y+=Math.sin(tNow*18)*r.wob*.09}
     r.bA=r.boosting?(r.bA||0)+dt:0;var bpu=r.boosting&&r.bA<.5?Math.exp(-Math.pow((r.bA-.12)/.09,2)):0;
     var ud=r.m.userData,spin=dt*(45+r.v*.25),kk,pl=ud.props,bq=r.bq=(r.bq||0)+((r.boosting?1:0)-(r.bq||0))*Math.min(1,dt*(r.boosting?9:4)),tl=1.6+vv*5.5+bq*6+(r.bA<.45?1.4*Math.exp(-Math.pow((r.bA-.15)/.12,2)):0),to=.3+vv*.2+bq*.5;
