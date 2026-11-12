@@ -3133,6 +3133,7 @@ function showEnd(){
 }
 
 function stepPlayer(p,dt,ctl){
+  if(p.fl){fallStep(p,dt);return}
   if(tp1&&!tp1.drag)updTouchSteer();
   var steerIn=0,wantB=false,brake=false;
   if(ctl){steerIn=clamp(((keys.r?1:0)-(keys.l?1:0))+touch.ax+tilt.ax,-1,1);wantB=!!(keys.b||touch.b);brake=!!keys.d}
@@ -3154,8 +3155,27 @@ function stepPlayer(p,dt,ctl){
   wall(p,dt);
   p.s+=p.v*dt;
 }
+function startFall(r,side){
+  if(r.fl||state!=="race"||tNow<(r.flc||0))return;
+  var E=elevE(r.s),y0=E+2.4;
+  r.fl={side:side,t:0,y:y0,y0:y0,E:E,T1:clamp(Math.sqrt(2*Math.max(y0,2)/45),.5,1.25),rot:0,rx:0,sp:false,u0:r.u};
+  r.ul=0;msg(TRK.id==="gol"?"GÖLE DÜŞTÜN!":"DENİZE DÜŞTÜN!","sm");buzz(90);shakeT=Math.max(shakeT,.3);if(combo>1)floatTxt("KOMBO KIRILDI","r");combo=0;comboT=0;beep(180,.3,"sawtooth",.1);
+}
+function fallStep(r,dt){
+  var f=r.fl,lim=W/2-.2,T1=f.T1,Tu=.7,Tr=1.2,u1=f.side*(lim+9),t,k;
+  f.t+=dt;t=f.t;f.E=elevE(r.s);
+  if(t<T1){k=t/T1;f.y=f.y0*(1-k*k);r.u=f.u0+(u1-f.u0)*sstep(0,1,k);f.rot+=dt*9*f.side;f.rx+=dt*4}
+  else{
+    if(!f.sp){f.sp=true;tp(r.s,r.u,0,_v);sparks(_v.x,.4,_v.z,80,.6,.85,1,28);sparks(_v.x,.4,_v.z,30,1,1,1,16,30,2.6);flashV=Math.max(flashV,.3);shakeT=Math.max(shakeT,.25);buzz(60);beep(110,.45,"sine",.13)}
+    if(t<T1+Tu){k=(t-T1)/Tu;f.y=-2*sstep(0,.5,k)+.15*Math.sin(t*9);r.u=u1;f.rot*=1-Math.min(1,dt*4);f.rx*=1-Math.min(1,dt*4)}
+    else{k=Math.min(1,(t-T1-Tu)/Tr);var e=sstep(0,1,k);f.y=-2+(f.E+4.4)*e;r.u=u1+(f.side*(lim-6)-u1)*e;f.rot*=1-Math.min(1,dt*4);f.rx*=1-Math.min(1,dt*4)}
+  }
+  r.v+=((t<T1+Tu?45:95)-r.v)*Math.min(1,dt*2.5);r.s+=r.v*dt;
+  if(t>=T1+Tu+Tr){r.fl=null;r.u=f.side*(lim-6);r.ul=0;r.wob=.5;r.dmg=2;r.flc=tNow+1.5}
+}
 function wall(r,dt){
   var lim=W/2-.2,sl=r.me&&r.shd>0?0:.7*(1-(r.res||0));
+  if(r.me&&TRK.wt&&!r.fl&&Math.abs(r.ul)>9&&wnS(r.s)>.6){if(r.u>lim&&r.ul>0){startFall(r,1);return}if(r.u<-lim&&r.ul<0){startFall(r,-1);return}}
   if(r.u>lim){r.u=lim;if(r.ul>0)r.ul*=-.25;r.v*=1-sl*dt;if(r.me)scrape(1)}
   else if(r.u<-lim){r.u=-lim;if(r.ul<0)r.ul*=-.25;r.v*=1-sl*dt;if(r.me)scrape(-1)}
 }
@@ -3604,12 +3624,13 @@ function render(dt){
     r.m.visible=vis;r.sh.visible=vis;
     if(!vis)continue;
     tgp(sr,r.u,2.4+Math.sin(tNow*3+r.i*1.7)*.1,_v);
-    r.m.position.copy(_v);r.sh.position.set(_v.x,_v.y-2.31,_v.z);
+    if(r.fl)_v.y=r.fl.y;
+    r.m.position.copy(_v);r.sh.position.set(_v.x,_v.y-2.31,_v.z);if(r.fl)r.sh.visible=false;
     if(r.dmg>0){r.smk+=dt;if(r.smk>.07){r.smk=0;smoke(_v.x,_v.y+.4,_v.z,1)}}
     var vv=clamp(r.v/220,0,1);
     r.m.rotation.y=head(sr)-r.ul*.012;
     var bq0=r.bq||0;r.m.rotation.x=.04-Math.atan(elevD(sr))*.9+vv*.14+bq0*.06+(r.me?clamp(camKV*.006,-.08,.1):0);
-    r.m.rotation.z=clamp(r.ul*.02,-.5,.5);
+    r.m.rotation.z=clamp(r.ul*.02,-.5,.5);if(r.fl){r.m.rotation.z+=r.fl.rot;r.m.rotation.x+=r.fl.rx}
     if(r.wob>0){r.m.rotation.z+=Math.sin(tNow*26)*r.wob*.16;r.m.rotation.y+=Math.sin(tNow*18)*r.wob*.09}
     r.bA=r.boosting?(r.bA||0)+dt:0;var bpu=r.boosting&&r.bA<.5?Math.exp(-Math.pow((r.bA-.12)/.09,2)):0;
     var ud=r.m.userData,spin=dt*(45+r.v*.25),kk,pl=ud.props,bq=r.bq=(r.bq||0)+((r.boosting?1:0)-(r.bq||0))*Math.min(1,dt*(r.boosting?9:4)),tl=1.6+vv*5.5+bq*6+(r.bA<.45?1.4*Math.exp(-Math.pow((r.bA-.15)/.12,2)):0),to=.3+vv*.2+bq*.5;
@@ -3656,7 +3677,8 @@ function render(dt){
   if(shakeT>prevShk+.05){trauma=Math.min(1,Math.max(trauma,.12+shakeT*.5));hurtV=Math.min(1,.3+shakeT*.6)}prevShk=shakeT;hurtV=Math.max(0,hurtV-dt*1.7);
   if(state==="race"){vLag+=(p.v-vLag)*Math.min(1,dt*2.2)}else vLag=p.v;
   var lagA=clamp((p.v-vLag)*.035,-1.4,2.2),cz=cc.d>2;
-  tgp(sP-cc.d+(cc.d>6?clamp((1.2-cam.aspect)/.6,0,1)*3.4:0)-(cz?camKick*1.4+bqc*1.3+vf*.4+lagA:0),camU,cc.h+(cz?bqc*.25-camKick*.3:0),_c1);tgp(sP+cc.la,camU*.4+p.u*.6,cc.ly,_c2);
+  var fo=p.fl?(p.fl.y-(p.fl.E+2.4))*.5:0,fu2=1;
+  tgp(sP-cc.d+(cc.d>6?clamp((1.2-cam.aspect)/.6,0,1)*3.4:0)-(cz?camKick*1.4+bqc*1.3+vf*.4+lagA:0),camU*fu2,cc.h+(p.fl?12:0)+(cz?bqc*.25-camKick*.3:0),_c1);tgp(sP+cc.la,camU*.4+p.u*.6,cc.ly+fo,_c2);
   var cdt=dt>0?1/dt:0;spU.uCV.value.set((_c1.x-camPX)*cdt,(_c1.y-camPY)*cdt,(_c1.z-camPZ)*cdt);camPX=_c1.x;camPY=_c1.y;camPZ=_c1.z;spU.uAsp.value=cam.aspect;
   if(brT>0){brT+=dt;var bk2=brT/.45;if(bk2>=1){brT=0;brMesh.visible=false}else{var bhy=p.m.rotation.y;brMesh.visible=true;brMesh.position.set(p.m.position.x-Math.sin(bhy)*2.4,p.m.position.y,p.m.position.z-Math.cos(bhy)*2.4);brMesh.rotation.set(0,bhy,0);brMesh.scale.setScalar(.8+bk2*5.5);brMesh.material.opacity=.9*Math.pow(1-bk2,1.6)}}
   if(cc.d<1.5){p.m.visible=false;p.sh.visible=false}
