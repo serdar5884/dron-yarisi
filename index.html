@@ -2522,7 +2522,7 @@ var brMesh=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.MeshBasicMateri
 brMesh.visible=false;brMesh.renderOrder=2;scene.add(brMesh);var brT=0;
 
 /* ---------- Kayıt: puan, garaj, yollar ---------- */
-var rf0=0,dup={},UMAX=6,UCAP={s:176,a:1.6,d:1,h:1.55,n:6.5},UCOST=[90,150,240,360,520,740],UST=["s","a","d","h","n"],UNM={s:"HIZ",a:"İVME",d:"DAYANIKLILIK",h:"ÇEVİKLİK",n:"NİTRO DOLUMU"};
+var rf0=0,dup={},UMAX=6,UCAP={s:176,a:1.6,d:1,h:1.55,n:6.5},UCOST=[200,330,520,800,1200,1800],UST=["s","a","d","h","n"],UNM={s:"HIZ",a:"İVME",d:"DAYANIKLILIK",h:"ÇEVİKLİK",n:"NİTRO DOLUMU"};
 var GARAGE=[
  {id:"sahin",accel:1,dur:0.5,ab:"blink",abn:"IŞINLAN",n:"Şahin",cost:0,body:0xff7a2e,acc:0xf26a1f,glow:0x2fd6ff,stripe:0x2fd6ff,flame:0x6fd0ff,spd:148,hnd:1,nit:3},
  {id:"yildirim",accel:1.1,dur:0.5,ab:"slam",abn:"SES DALGASI",n:"Yıldırım",cost:250,body:0xf2c230,acc:0x3a3a48,glow:0xfff08a,stripe:0x15151c,flame:0xffe24a,spd:154,hnd:1.1,nit:3.6},
@@ -2538,7 +2538,7 @@ var GARAGE=[
  {id:"ozel",ab:"slam",abn:"SES DALGASI",n:"Özel Dron",cost:300,body:0xff7a2e,acc:0xc85a1a,glow:0x2fd6ff,stripe:0xffffff,flame:0x6fd0ff,spd:158,hnd:1.18,nit:4.4,accel:1.1,dur:.5,shape:0,rshape:0,rcol:0xf26a1f}
 ];
 function gPow(e){return Math.round(((clamp((e.spd-140)/36,0,1)+clamp((e.accel||1)/1.6,0,1)+clamp(e.dur||.5,0,1)+clamp((e.hnd-.8)/.75,0,1))/4)*100)}
-GARAGE.forEach(function(d){if(d.cost>0)d.cost=Math.round(gPow(d)*30/10)*10});
+GARAGE.forEach(function(d){if(d.cost>0)d.cost=Math.round(gPow(d)*60/10)*10});
 function dlv(id){return dup[id]||(dup[id]={s:0,a:0,d:0,h:0,n:0})}
 function statAt(d,k,l){var b={s:d.spd,a:d.accel||1,d:d.dur||.5,h:d.hnd,n:d.nit}[k];return b+(Math.max(UCAP[k],b)-b)*l/UMAX}
 function ed(d){if(d.id==="ozel")return{spd:d.spd,accel:d.accel,dur:d.dur,hnd:d.hnd,nit:d.nit};var l=dlv(d.id);return{spd:statAt(d,"s",l.s),accel:statAt(d,"a",l.a),dur:statAt(d,"d",l.d),hnd:statAt(d,"h",l.h),nit:statAt(d,"n",l.n)}}
@@ -3337,7 +3337,7 @@ function updOcean(dt){
   var i0=Math.floor((p.s-g2.s0-70)/22),q,ix;
   for(ix=i0-1;ix<=i0+2;ix++){q=g2.pp[ix];if(!q||!q.on)continue;
     if(Math.abs(q.s-p.s)<3.6&&Math.abs(q.u-p.u)<3.4){q.on=false;dummy.position.set(0,-999,0);dummy.scale.set(0,0,0);dummy.updateMatrix();g2.pm.setMatrixAt(ix,dummy.matrix);g2.pm.instanceMatrix.needsUpdate=true;
-      var gx=q.gold?500:100,gc=q.gold?5:1;xp+=gx;coins+=gc;wallet+=gc;BZ.xp+=gx;BZ.n++;floatTxt("+"+gx+" XP - "+(q.gold?"ALTIN İNCİ":"İNCİ"),q.gold?"g":"");beep(q.gold?1500:1100+(BZ.n%6)*90,.12,"sine",.08);sparks(q.x,q.y,q.z,10,1,.95,.8,10)}}
+      var gx=q.gold?500:100,gc=q.gold?3:(BZ.n%3===0?1:0);xp+=gx;coins+=gc;wallet+=gc;BZ.xp+=gx;BZ.n++;floatTxt("+"+gx+" XP - "+(q.gold?"ALTIN İNCİ":"İNCİ"),q.gold?"g":"");beep(q.gold?1500:1100+(BZ.n%6)*90,.12,"sine",.08);sparks(q.x,q.y,q.z,10,1,.95,.8,10)}}
   for(i=0;i<g2.fd.length;i++){var f=g2.fd[i],t=tNow*f.sp+f.o,fs=g2.s0+(i/g2.fd.length)*g2.len+Math.sin(t)*40,fu=g2.u0+f.r*Math.cos(t*1.3+f.ph)*(f.k<.5?1:-1);
     tp(fs,fu,0,_sv);dummy.position.set(_sv.x,HsuT(fs,fu)+f.y+2*Math.sin(t*2),_sv.z);dummy.rotation.set(0,head(fs)+(Math.sin(t)>0?0:Math.PI),0);dummy.scale.set(f.z,f.z,f.z);dummy.updateMatrix();g2.fm.setMatrixAt(i,dummy.matrix);colr.set(f.c);g2.fm.setColorAt(i,colr)}
   g2.big.forEach(function(b){var t=tNow*b.sp+b.o,bs=g2.s0+g2.len*(.5+.5*Math.sin(t)),bu=g2.u0+b.r*Math.cos(t*1.7+b.ph)*(b.ph%2>1?1:-1),dir=Math.cos(t)>=0?0:Math.PI;
@@ -3390,7 +3390,7 @@ function useShield(){
 }
 function addCombo(base,label,cls){
   combo++;comboT=5;
-  var m=Math.min(combo,9),g=base*m,pts=Math.round(g/160);
+  var m=Math.min(combo,9),g=base*m,pts=Math.round(g/450);
   xp+=g;coins+=pts;wallet+=pts;
   floatTxt("+"+g+" XP - "+label+(m>1?"  x"+m:""),cls);
   beep(700+m*60,.12,"triangle",.07);
@@ -3497,14 +3497,14 @@ function step(dt){
       if(!tt&&!online&&gmode==="multi")mrc++;
       if(!tt&&!online&&gmode!=="duel"){if(place<=3)sm1|=1;if(finishedTime<=TRK.tgt)sm1|=2;if(cpCount>=3)sm1|=4;stars[TRK.id]=sm1}
       starRes={o:sm0,m:sm1};
-      bonusGot=Math.round((tt?20:place===1?70:place===2?40:place===3?25:8)*TRK.mult*(gmode==="duel"&&!tt&&!online?.5:curField<8?.8:1));wallet+=bonusGot;
+      bonusGot=Math.round((tt?8:place===1?30:place===2?18:place===3?11:3)*TRK.mult*(gmode==="duel"&&!tt&&!online?.5:curField<8?.8:1));wallet+=bonusGot;
       if(!online&&(!recs[TRK.id]||finishedTime<recs[TRK.id])){recs[TRK.id]=finishedTime;newRec=true;ghostData={t:finishedTime,d:grec.slice()};try{localStorage.setItem(GK+TRK.id,JSON.stringify(ghostData))}catch(e){}}
       save();
       msg(place===1?"1. SIRA!":place+". SIRA","go");beep(990,.6,"triangle",.1);
       endTimer=1.6;
     }
     if(state==="race"){
-      var dps=ps-prevPs,lo=(dps>=0&&dps<60)?prevPs:ps,pv=Math.max(1,Math.round(TRK.mult));
+      var dps=ps-prevPs,lo=(dps>=0&&dps<60)?prevPs:ps,pv=Math.max(1,Math.round(TRK.mult/2));
       for(var k=0;k<rings.length;k++){
         var r=rings[k];
         if(r.on&&r.s>=lo-2.4&&r.s<=ps+2.4&&Math.abs(r.u-p.u)<3.4){ringSet(r,false);if(curLap===1&&(k&1)===0){coins+=pv;wallet+=pv}p.nitro=Math.min(100,p.nitro+1.2);beep(1200+(k%5)*120,.09,"sine",.07)}
