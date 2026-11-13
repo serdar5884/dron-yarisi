@@ -609,7 +609,7 @@ body.touch.racing #steer{animation:steerh 3.2s ease-out forwards}
         <div class="digi"><span id="spd">0</span><small>km/h</small></div></div>
       <div class="abs">
         <div class="ab" id="rA"><kbd>F</kbd><em>YETENEK</em><span id="abl"></span></div>
-        <div class="ab" id="rZ"><kbd>R</kbd><em>YILDIRIM</em><span id="zpl"></span></div>
+        <div class="ab" id="rZ"><kbd>I</kbd><em>YILDIRIM</em><span id="zpl"></span></div>
         <div class="ab" id="rE"><kbd>G</kbd><em>EMP</em><span id="empl"></span></div>
         <div class="ab" id="rS"><kbd>E</kbd><em>KALKAN</em><span id="shl"></span></div>
       </div>
@@ -2628,7 +2628,7 @@ function kset(e,v){
   else if(k==="p"||k==="P"||k==="Escape"){if(v&&!e.repeat)setPause(!paused)}
   else if(k==="f"||k==="F"){if(v&&!e.repeat)useAbility()}
   else if(k==="g"||k==="G"){if(v&&!e.repeat)dropEmp(player)}
-  else if(k==="r"||k==="R"){if(v&&!e.repeat)useZap()}
+  else if(k==="i"||k==="I"){if(v&&!e.repeat)useZap()}
   else h=false;
   if(h&&!(k===" "&&e.target&&e.target.tagName==="BUTTON"))e.preventDefault();
 }
