@@ -2522,6 +2522,7 @@ var brMesh=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.MeshBasicMateri
 brMesh.visible=false;brMesh.renderOrder=2;scene.add(brMesh);var brT=0;
 
 /* ---------- Kayıt: puan, garaj, yollar ---------- */
+var rf0=0,dup={},UMAX=6,UCAP={s:176,a:1.6,d:1,h:1.55,n:6.5},UCOST=[90,150,240,360,520,740],UST=["s","a","d","h","n"],UNM={s:"HIZ",a:"İVME",d:"DAYANIKLILIK",h:"ÇEVİKLİK",n:"NİTRO DOLUMU"};
 var GARAGE=[
  {id:"sahin",accel:1,dur:0.5,ab:"blink",abn:"IŞINLAN",n:"Şahin",cost:0,body:0xff7a2e,acc:0xf26a1f,glow:0x2fd6ff,stripe:0x2fd6ff,flame:0x6fd0ff,spd:148,hnd:1,nit:3},
  {id:"yildirim",accel:1.1,dur:0.5,ab:"slam",abn:"SES DALGASI",n:"Yıldırım",cost:250,body:0xf2c230,acc:0x3a3a48,glow:0xfff08a,stripe:0x15151c,flame:0xffe24a,spd:154,hnd:1.1,nit:3.6},
@@ -2536,6 +2537,12 @@ var GARAGE=[
  {id:"aksahin",mdl:"as",n:"AK-ŞAHİN",cost:2300,ab:"blink",abn:"IŞINLAN",body:0xf2f2f6,acc:0x5a6a8a,glow:0x6ad0ff,stripe:0x2f6af0,flame:0x9fe8ff,spd:158,hnd:1.05,nit:4.5,accel:1,dur:.7,ng:1.5,dm:.67,arm:[2.7,3,2.9],perk:"Nitro ve küre kazancı %50 daha uzun itki"},
  {id:"ozel",ab:"slam",abn:"SES DALGASI",n:"Özel Dron",cost:300,body:0xff7a2e,acc:0xc85a1a,glow:0x2fd6ff,stripe:0xffffff,flame:0x6fd0ff,spd:158,hnd:1.18,nit:4.4,accel:1.1,dur:.5,shape:0,rshape:0,rcol:0xf26a1f}
 ];
+function gPow(e){return Math.round(((clamp((e.spd-140)/36,0,1)+clamp((e.accel||1)/1.6,0,1)+clamp(e.dur||.5,0,1)+clamp((e.hnd-.8)/.75,0,1))/4)*100)}
+GARAGE.forEach(function(d){if(d.cost>0)d.cost=Math.round(gPow(d)*30/10)*10});
+function dlv(id){return dup[id]||(dup[id]={s:0,a:0,d:0,h:0,n:0})}
+function statAt(d,k,l){var b={s:d.spd,a:d.accel||1,d:d.dur||.5,h:d.hnd,n:d.nit}[k];return b+(Math.max(UCAP[k],b)-b)*l/UMAX}
+function ed(d){if(d.id==="ozel")return{spd:d.spd,accel:d.accel,dur:d.dur,hnd:d.hnd,nit:d.nit};var l=dlv(d.id);return{spd:statAt(d,"s",l.s),accel:statAt(d,"a",l.a),dur:statAt(d,"d",l.d),hnd:statAt(d,"h",l.h),nit:statAt(d,"n",l.n)}}
+
 var SAVE="dronYarisiGaraj1",GFXN=["OTO","DÜŞÜK","YÜKSEK"],GK="dronYarisiHayalet3_",wallet=0,mrc=0,gmode="multi",rivalM=null,curField=8,owned=["sahin"],selId="sahin",totalLaps=0,recs={},trkId="vadi",upg={m:0,b:0,p:0},oup={m:0,b:0,p:0,a:0,z:0},cosOwn=[0],cosSel=0,des={sh:0,bc:0,rc:0,rs:0,o:{sh:[0],bc:[0,1,2],rc:[0,1,2],rs:[0]}},ghostOn=true,tt=false,ghostData=null,stars={},cpCount=0,starRes=null,tunNow=false,tunD=0,tunDa=false;
 function totStars(){var n=0;for(var k in stars){var m=stars[k]|0;n+=(m&1)+((m>>1)&1)+((m>>2)&1)}return n}
 function starStr(m){return((m&1)?"★":"☆")+((m&2)?"★":"☆")+((m&4)?"★":"☆")}
@@ -2544,9 +2551,9 @@ function goalsTxt(m){var mk=function(b){return(m&b)?"★":"☆"};return mk(1)+" 
 var MODELS=[];var COS=[{n:"Standart",c:0,cost:0},{n:"Pembe",c:0xff4fd8,cost:120},{n:"Yeşil",c:0x4dff7a,cost:120},{n:"Altın",c:0xffd23a,cost:200},{n:"Kırmızı",c:0xff4a3a,cost:120},{n:"Beyaz",c:0xffffff,cost:200}],DCOL=[0xff7a2e,0xe84a4a,0xf2c230,0x4dff7a,0x2fd6ff,0x4a6bff,0xb48cff,0xff4fd8,0xffffff,0x2b3345],DCST={sh:[0,150,150,250],rs:[0,100,150,150],bc:[0,0,0,80,80,80,80,80,80,80],rc:[0,0,0,60,60,60,60,60,60,60]},DSHN=["Kutu","Keskin","Yuvarlak","Geniş"],DRSN=["Halka","Kalın","Kare","Altıgen"],UPC=[120,240,420,700],UPN={m:"MOTOR · hız",b:"BATARYA · nitro",p:"PERVANE · dönüş"};
 try{
   var sv=JSON.parse(localStorage.getItem(SAVE)||"null");
-  if(sv){wallet=sv.w|0;if(sv.o&&sv.o.length)owned=sv.o;if(sv.s)selId=sv.s;totalLaps=sv.tl|0;mrc=sv.mrc|0;if(sv.rec&&sv.tv===2)recs=sv.rec;if(sv.trk)trkId=sv.trk;if(sv.ou)oup={m:sv.ou.m|0,b:sv.ou.b|0,p:sv.ou.p|0,a:sv.ou.a|0,z:sv.ou.z|0};if(sv.u)upg={m:sv.u.m|0,b:sv.u.b|0,p:sv.u.p|0};if(sv.co&&sv.co.length)cosOwn=sv.co;cosSel=sv.cs|0;if(sv.des&&sv.des.o){des=sv.des}if(sv.gq===1||sv.gq===2)gq=sv.gq;if(sv.gh===false)ghostOn=false;if(sv.tt)tt=true;if(sv.st&&typeof sv.st==="object")stars=sv.st}
+  if(sv){wallet=sv.w|0;if(sv.o&&sv.o.length)owned=sv.o;if(sv.s)selId=sv.s;totalLaps=sv.tl|0;mrc=sv.mrc|0;if(sv.rec&&sv.tv===2)recs=sv.rec;if(sv.trk)trkId=sv.trk;if(sv.ou)oup={m:sv.ou.m|0,b:sv.ou.b|0,p:sv.ou.p|0,a:sv.ou.a|0,z:sv.ou.z|0};if(sv.u&&!sv.dv){var rf=0;["m","b","p"].forEach(function(k){for(var q=0;q<(sv.u[k]|0);q++)rf+=UPC[q]||0});wallet+=rf;rf0=rf}if(sv.du&&typeof sv.du==="object")dup=sv.du;if(sv.co&&sv.co.length)cosOwn=sv.co;cosSel=sv.cs|0;if(sv.des&&sv.des.o){des=sv.des}if(sv.gq===1||sv.gq===2)gq=sv.gq;if(sv.gh===false)ghostOn=false;if(sv.tt)tt=true;if(sv.st&&typeof sv.st==="object")stars=sv.st}
 }catch(e){}
-function save(){try{localStorage.setItem(SAVE,JSON.stringify({w:wallet,o:owned,s:selId,tl:totalLaps,mrc:mrc,rec:recs,trk:TRK.id,gq:gq,des:des,u:upg,ou:oup,co:cosOwn,cs:cosSel,gh:ghostOn,tt:tt,st:stars,tv:2}))}catch(e){}}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify({w:wallet,o:owned,s:selId,tl:totalLaps,mrc:mrc,rec:recs,trk:TRK.id,gq:gq,des:des,u:upg,du:dup,dv:1,ou:oup,co:cosOwn,cs:cosSel,gh:ghostOn,tt:tt,st:stars,tv:2}))}catch(e){}}
 GARAGE.forEach(function(g0){if(g0.mdl)MODELS.push(g0)});
 function gDef(id){for(var i=0;i<GARAGE.length;i++)if(GARAGE[i].id===id)return GARAGE[i];return GARAGE[0]}
 function disposeObj(o){o.traverse(function(x){if(x.geometry)x.geometry.dispose();if(x.material&&x.material.dispose)x.material.dispose()})}
@@ -2562,8 +2569,8 @@ function applyDrone(){
   var d2=Object.assign({},d);
   if(cosSel>0&&COS[cosSel]){d2.glow=d2.flame=COS[cosSel].c;if(COS[cosSel].c===0xffffff)d2.stripe=0xffffff}
   var m=makeDrone(d2);scene.add(m);
-  p.m=m;p.d=d2;var oz=d.id==="ozel";p.spd=d.spd+(oz?0:upg.m*3);p.hnd=d.hnd+(oz?0:upg.p*.05);p.nreg=d.nit+(oz?0:upg.b*.6);
-  p.acc=d.accel||1;p.res=d.res||0;p.shdMul=d.shdMul||1;p.ng=d.ng||1;p.dm=d.dm||1;p.cpb=d.cpb||150;p.steerK=d.steerK||1;p.wp=!!d.wp;
+  p.m=m;p.d=d2;var oz=d.id==="ozel",ef=ed(d);p.spd=ef.spd;p.hnd=ef.hnd;p.nreg=ef.nit;
+  p.acc=ef.accel;p.res=1-(1-(d.res||0))*(1-(oz?0:.7*dlv(d.id).d/UMAX));p.shdMul=d.shdMul||1;p.ng=d.ng||1;p.dm=d.dm||1;p.cpb=d.cpb||150;p.steerK=d.steerK||1;p.wp=!!d.wp;
 }
 function dkc(c){return(((c>>16&255)*.72)|0)<<16|(((c>>8&255)*.72)|0)<<8|(((c&255)*.72)|0)}
 var OZC=function(l){return Math.round(150*Math.pow(1.28,l))};
@@ -2585,7 +2592,7 @@ function syncOzel(){
   var g=gDef("ozel");ozStats(g);g.shape=des.sh;g.rshape=des.rs;g.body=DCOL[des.bc];g.acc=dkc(g.body);g.rcol=DCOL[des.rc];
 }
 syncOzel();
-applyDrone();
+applyDrone();if(rf0)save();
 
 /* ---------- Giriş ---------- */
 var keys={l:0,r:0,b:0,d:0},touch={b:0,ax:0};
@@ -2926,12 +2933,12 @@ function gRender(){
   $("gBal").textContent=String(wallet);
   var h="";
   GARAGE.forEach(function(d){
-    var own=owned.indexOf(d.id)>=0,sel=selId===d.id,im=drThumbs&&drThumbs[d.id];
+    var own=owned.indexOf(d.id)>=0,sel=selId===d.id,im=drThumbs&&drThumbs[d.id],e=ed(d);
     h+='<div class="gi'+(sel?" sel":"")+(own?"":" lock")+'">'+
       (im?'<div class="ph"><img src="'+im+'" alt="'+d.n+'">'+(own?"":LKS)+'</div>':'<div class="ph"><div class="sw" style="background:linear-gradient(135deg,#'+hex6(d.body)+',#'+hex6(d.glow)+')"></div>'+(own?"":LKS)+'</div>')+
       '<div class="gn">'+d.n+'</div>'+
-      '<div class="st"><span>HIZ</span><b>'+bar(d.spd-140,36)+'</b><span>İVME</span><b>'+bar(d.accel||1,1.6)+'</b><span>DAYANIKLILIK</span><b>'+bar(d.dur||.5,1)+'</b><span>ÇEVİKLİK</span><b>'+bar(d.hnd-.8,.75)+'</b></div>'+(d.perk?'<div class="perk">'+d.perk+'</div>':'')+
-      '<div class="rec">YETENEK: '+d.abn+'</div>'+'<div class="pw"><span>GENEL GÜÇ</span><b>'+Math.round(((clamp((d.spd-140)/36,0,1)+clamp((d.accel||1)/1.6,0,1)+clamp(d.dur||.5,0,1)+clamp((d.hnd-.8)/.75,0,1))/4)*100)+'</b></div>'+
+      '<div class="st"><span>HIZ</span><b>'+bar(e.spd-140,36)+'</b><span>İVME</span><b>'+bar(e.accel,1.6)+'</b><span>DAYANIKLILIK</span><b>'+bar(e.dur,1)+'</b><span>ÇEVİKLİK</span><b>'+bar(e.hnd-.8,.75)+'</b></div>'+(d.perk?'<div class="perk">'+d.perk+'</div>':'')+
+      '<div class="rec">YETENEK: '+d.abn+'</div>'+'<div class="pw"><span>GENEL GÜÇ</span><b>'+gPow(e)+'</b></div>'+
       '<button type="button" data-id="'+d.id+'"'+(sel?" disabled":"")+(!own&&wallet<d.cost?' class="dim"':"")+'>'+(sel?"Seçili":own?"Seç":"Satın al · "+d.cost)+'</button></div>';
   });
   $("gList").innerHTML=h;
@@ -2959,12 +2966,15 @@ function gRender(){
       var lv=oup[k],cst=OZC(lv);
       u+='<div class="ur up"><div class="uh"><span class="nm">'+OZN[k]+'</span><span class="lv">Seviye '+lv+'</span></div><div class="ef">'+(lv?OE[k](lv):"Henüz yok")+" → "+OE[k](lv+1)+'</div><button type="button" data-ou="'+k+'"'+(wallet<cst?' class="dim"':"")+'>Yükselt · '+cst+'</button></div>';
     });
-  }else
-  ["m","b","p"].forEach(function(k){
-    var lv=upg[k],mx=lv>=4;
-    var pp="";for(var pi=0;pi<4;pi++)pp+='<i'+(pi<lv?' class="on"':'')+'></i>';
-    u+='<div class="ur up"><div class="uh"><span class="nm">'+UPN[k]+'</span><span class="lv">Seviye '+lv+'/4</span></div><div class="ef">'+(lv?EF[k](lv):"Henüz yok")+(mx?"":" → "+EF[k](lv+1))+'</div><div class="pips">'+pp+'</div><button type="button" data-up="'+k+'"'+(mx?" disabled":wallet<UPC[lv]?' class="dim"':"")+'>'+(mx?"MAKS":"Yükselt · "+UPC[lv])+'</button></div>';
-  });
+  }else{
+    var ld=dlv(selId),pdd=gDef(selId),fm={s:function(v){return Math.round(v)+" hız"},a:function(v){return v.toFixed(2)+" ivme"},d:function(v){return Math.round(v*100)+" dayanıklılık"},h:function(v){return v.toFixed(2)+" çeviklik"},n:function(v){return v.toFixed(1)+" nitro dolumu"}};
+    var tl=0;UST.forEach(function(k){tl+=ld[k]});
+    u+='<div class="sub" style="margin:.2em 0">GELİŞTİRME · '+tl+'/'+UST.length*UMAX+' SEVİYE</div>';
+    UST.forEach(function(k){
+      var lv=ld[k],mx=lv>=UMAX,cst=UCOST[lv],pp="";for(var pi=0;pi<UMAX;pi++)pp+='<i'+(pi<lv?' class="on"':'')+'></i>';
+      u+='<div class="ur up"><div class="uh"><span class="nm">'+UNM[k]+'</span><span class="lv">Seviye '+lv+'/'+UMAX+'</span></div><div class="ef">'+fm[k](statAt(pdd,k,lv))+(mx?" · TAM":" → "+fm[k](statAt(pdd,k,lv+1)))+'</div><div class="pips">'+pp+'</div><button type="button" data-du="'+k+'"'+(mx?" disabled":wallet<cst?' class="dim"':"")+'>'+(mx?"MAKS":"Yükselt · "+cst)+'</button></div>';
+    });
+  }
   u+='<div class="ur up"><div class="uh"><span class="nm">IŞIK / İZ RENGİ</span></div><div class="ef">Dronun iz ve ışık rengi</div><div class="sws">';
   COS.forEach(function(c,i){
     var own=cosOwn.indexOf(i)>=0;
@@ -2983,6 +2993,8 @@ $("gUp").addEventListener("click",function(e){
   }
   var ok=b.getAttribute("data-ou");
   if(ok){var oc=OZC(oup[ok]);if(wallet<oc){$("gMsg").textContent="Yetersiz puan";return}wallet-=oc;oup[ok]++;syncOzel();$("gMsg").textContent="";applyDrone();save();gRender();return}
+  var du=b.getAttribute("data-du");
+  if(du){var dl=dlv(selId);if(dl[du]>=UMAX)return;var dc2=UCOST[dl[du]];if(wallet<dc2){$("gMsg").textContent="Yetersiz puan";return}wallet-=dc2;dl[du]++;$("gMsg").textContent="";applyDrone();save();gRender();return}
   var k=b.getAttribute("data-up"),ci=b.getAttribute("data-co");
   if(k){var c=UPC[upg[k]];if(wallet<c){$("gMsg").textContent="Yetersiz puan";return}wallet-=c;upg[k]++}
   else if(ci!==null){ci=+ci;if(cosOwn.indexOf(ci)<0){if(wallet<COS[ci].cost){$("gMsg").textContent="Yetersiz puan";return}wallet-=COS[ci].cost;cosOwn.push(ci)}cosSel=ci}
