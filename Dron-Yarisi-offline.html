@@ -1788,7 +1788,7 @@ function buildWorld(){
     if(!(TRK.tb===1||TRK.tb===2))return;
     var sgT=ctex(256,64,function(g,w,h){g.clearRect(0,0,w,h);g.fillStyle="rgba(4,40,70,.78)";g.fillRect(0,0,w,h);g.strokeStyle="#6fe8ff";g.lineWidth=4;g.strokeRect(2,2,w-4,h-4);g.fillStyle="#bffcff";g.font="800 26px sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText("OKYANUS ÇIKIŞI",w/2,h/2)});
     [.27,.63].forEach(function(fr,gi){
-      var s0=Math.round(fr*L/10)*10,side=gi%2?1:-1,gu=side*(W/2-6);
+      var s0=Math.round(fr*L/10)*10,side=gi%2?1:-1,gu=side*W*.25;
       var r1=new THREE.Mesh(new THREE.TorusGeometry(4.6,.55,8,26),new THREE.MeshBasicMaterial({color:0x6fe8ff})),r2=new THREE.Mesh(new THREE.TorusGeometry(3.3,.3,6,22),new THREE.MeshBasicMaterial({color:0xff9af0}));
       tp(s0,gu,4.6,_v);r1.position.copy(_v);r2.position.copy(_v);r1.rotation.y=r2.rotation.y=head(s0);world.add(r1);world.add(r2);
       var sg=new THREE.Sprite(new THREE.SpriteMaterial({map:sgT,transparent:true,depthWrite:false}));sg.scale.set(16,4,1);tp(s0,gu,13,_v);sg.position.copy(_v);world.add(sg);
