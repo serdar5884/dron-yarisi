@@ -3289,12 +3289,12 @@ function buildOcean(){
     for(i=0;i<np;i++){var ps=s0+70+i*22,pu=u0+11*Math.sin(i*.37+g.idx*2),gold=i%7===6;tp(ps,pu,0,v);var py=HsuT(ps,pu)+3.4+1.2*Math.sin(i);
       g.pp.push({s:ps,u:pu,y:py,x:v.x,z:v.z,gold:gold,on:true});setI(pm,i,v.x,py,v.z,0,gold?1.7:1,gold?1.7:1,gold?1.7:1,gold?0xffd24a:0xffe6f4)}
     fin(pm);
-    var cols=[0xff7a4a,0xff4a8a,0xffb03a,0xa86aff,0x3affc0,0xff6a6a,0xffd06a],cT=[0,1,2,3],cN=coarse?[26,18,14,12]:[55,40,30,25],cS=[[5,11],[3,8],[3,7],[5,12]],cM=[];
+    var cols=[0xff7a4a,0xff4a8a,0xffb03a,0xa86aff,0x3affc0,0xff6a6a,0xffd06a],cT=[0,1,2,3],cN=coarse?[26,18,14,12]:[55,40,30,25],cS=[[2.6,6],[1.8,4.4],[1.8,4],[2.8,6.5]],cM=[];
     for(var ct=0;ct<4;ct++){var cmm=inst(coralGeo(ct),swMat(ct===2?.02:.09,0),cN[ct]);cM.push(cmm);
       for(k=0;k<cN[ct];k++){var cs=R(s0,s0+len),cu=u0+(rnd()<.5?-1:1)*R(15,46),cz=R(cS[ct][0],cS[ct][1]);tp(cs,cu,0,v);setI(cmm,k,v.x,HsuT(cs,cu)-.5,v.z,rnd()*6,cz,cz*R(.8,1.3),cz,cols[(rnd()*cols.length)|0])}
       fin(cmm)}
-    var nK=coarse?40:100,km=inst(new THREE.CylinderGeometry(.18,.4,1,5,8),swMat(2.4,.5),nK);
-    for(k=0;k<nK;k++){var ks=R(s0,s0+len),ku=u0+(rnd()<.5?-1:1)*R(13,40),kh=R(8,22);tp(ks,ku,0,v);setI(km,k,v.x,HsuT(ks,ku)+kh/2-1,v.z,0,1,kh,1,[0x2fa860,0x3ac478,0x1f8a50][(rnd()*3)|0])}
+    var nK=coarse?40:100,km=inst(new THREE.CylinderGeometry(.18,.4,1,5,8),swMat(1.3,.5),nK);
+    for(k=0;k<nK;k++){var ks=R(s0,s0+len),ku=u0+(rnd()<.5?-1:1)*R(13,40),kh=R(4,11);tp(ks,ku,0,v);setI(km,k,v.x,HsuT(ks,ku)+kh/2-.5,v.z,0,.6,kh,.6,[0x2fa860,0x3ac478,0x1f8a50][(rnd()*3)|0])}
     fin(km);
     for(k=0;k<3;k++){
       var wsx=s0+300+k*450,wux=u0+(k%2?-1:1)*R(24,32),wg=new THREE.Group();tp(wsx,wux,0,v);
@@ -3304,7 +3304,7 @@ function buildOcean(){
       wg.position.set(v.x,HsuT(wsx,wux)+1,v.z);wg.rotation.y=head(wsx)+R(-.7,.7);wg.rotation.z=.28;world.add(wg);wg.userData.noLift=true;
     }
     var gM=[inst(coralGeo(0),swMat(.07,0),coarse?8:16),inst(coralGeo(1),swMat(.06,0),coarse?6:12)];
-    for(var gt=0;gt<2;gt++){var gn=gt?(coarse?6:12):(coarse?8:16);for(k=0;k<gn;k++){var gs2=R(s0+40,s0+len),gu=u0+(rnd()<.5?-1:1)*R(26,70),gz=R(26,52);tp(gs2,gu,0,v);setI(gM[gt],k,v.x,HsuT(gs2,gu)-1,v.z,rnd()*6,gz,gz*R(.9,1.3),gz,cols[(rnd()*cols.length)|0])}fin(gM[gt])}
+    for(var gt=0;gt<2;gt++){var gn=gt?(coarse?6:12):(coarse?8:16);for(k=0;k<gn;k++){var gs2=R(s0+40,s0+len),gu=u0+(rnd()<.5?-1:1)*R(26,70),gz=R(14,28);tp(gs2,gu,0,v);setI(gM[gt],k,v.x,HsuT(gs2,gu)-1,v.z,rnd()*6,gz,gz*R(.9,1.3),gz,cols[(rnd()*cols.length)|0])}fin(gM[gt])}
     var nb=coarse?70:150,bgm=new THREE.BufferGeometry(),bpa=new Float32Array(nb*3);g.bub=[];
     for(k=0;k<nb;k++){var bs=R(s0,s0+len),bu=u0+R(-34,34);tp(bs,bu,0,v);var by0=HsuT(bs,bu);g.bub.push({x:v.x,z:v.z,y0:by0,h:R(30,60),sp:R(3,7),o:R(0,60)});bpa[k*3]=v.x;bpa[k*3+1]=by0;bpa[k*3+2]=v.z}
     bgm.setAttribute("position",new THREE.BufferAttribute(bpa,3));g.bubM=new THREE.Points(bgm,new THREE.PointsMaterial({color:0xd8f4ff,size:1.1,transparent:true,opacity:.6,depthWrite:false}));g.bubM.frustumCulled=false;g.bubM.userData.noLift=true;world.add(g.bubM);
@@ -3343,7 +3343,7 @@ function startBonus(g){
   flashV=1;camKV+=14;msg("OKYANUSA DALIŞ!","sm go");beep(300,.4,"sine",.1);beep(600,.5,"sine",.08);buzz(60);
 }
 function endBonus(){
-  var p=player,g=BZ.g;BZ.on=false;g.used=true;
+  var p=player,g=BZ.g;BZ.on=false;ogates.forEach(function(q){q.used=true});
   p.bo=0;p.s=BZ.sOld;p.u=BZ.uOld;p.ul=0;camU=p.u*cc.lf;
   flashV=1;camKV+=14;msg("ANA YOLA DÖNDÜN · +"+BZ.xp+" XP","sm go");beep(500,.3,"triangle",.1);beep(800,.4,"triangle",.1);
   racers.forEach(function(r){r.prel=null});
@@ -3351,7 +3351,7 @@ function endBonus(){
 function updOcean(dt){
   var p=player,i;
   var oh=$("ozh");
-  ogates.forEach(function(g){g.r1.rotation.z+=dt*1.3;g.r2.rotation.z-=dt*2.2;g.r1.scale.setScalar(1+.06*Math.sin(tNow*5+g.idx))});
+  ogates.forEach(function(g){g.r1.visible=g.r2.visible=!g.used;if(g.used)return;g.r1.rotation.z+=dt*1.3;g.r2.rotation.z-=dt*2.2;g.r1.scale.setScalar(1+.06*Math.sin(tNow*5+g.idx))});
   if(state!=="race"&&BZ.on){BZ.on=false;p.bo=0}
   if(!BZ.on){
     if(oh&&oh.className)oh.className="";
