@@ -3299,10 +3299,17 @@ function buildOcean(){
     g.fm=inst(fg,new THREE.MeshLambertMaterial({color:0xffffff}),nf);g.fd=[];
     for(k=0;k<nf;k++){g.fd.push({o:R(0,6.28),sp:R(.5,1.1),r:R(5,14),ph:R(0,6.28),k:R(0,1),z:R(1.4,3.4)*(rnd()<.25?2.2:1),y:R(3,18),c:[0xffa040,0x40c8ff,0xffe14a,0xff6a8a][(rnd()*4)|0]})}
     tp(s0+len,u0,0,v);g.er=new THREE.Mesh(new THREE.TorusGeometry(10,.8,8,28),new THREE.MeshBasicMaterial({color:0xff9af0}));g.er.position.set(v.x,HsuT(s0+len,u0)+9,v.z);g.er.rotation.y=head(s0+len);world.add(g.er);g.er.userData.noLift=true;
+    g.er.geometry=new THREE.TorusGeometry(12,1.1,8,32);g.er.position.y=HsuT(s0+len,u0)+12;
+    var cg=new THREE.Group(),cb=HsuT(s0+len,u0),cc2=[0xff4a8a,0xff7a4a,0xa86aff,0xffb03a];
+    function cone(x,z,h,r,c,tx,tz){var m=new THREE.Mesh(new THREE.ConeGeometry(r,h,6),MTl(c));m.position.set(x,h/2-2,z);m.rotation.z=tx||0;m.rotation.x=tz||0;cg.add(m)}
+    cone(-17,0,52,7,cc2[0],-.18);cone(17,0,52,7,cc2[1],.18);cone(-24,8,40,6,cc2[2],-.1);cone(24,8,40,6,cc2[3],.1);
+    cone(0,24,90,26,cc2[0]);cone(-14,20,66,12,cc2[2],-.12);cone(14,20,66,12,cc2[1],.12);cone(0,8,34,5,cc2[3],0,-.4);
+    var pd=new THREE.Mesh(new THREE.CircleGeometry(11,24),new THREE.MeshBasicMaterial({color:0xffc6f6,transparent:true,opacity:.45,side:THREE.DoubleSide}));pd.position.set(0,12+2,2);cg.add(pd);g.pd=pd;
+    cg.position.set(v.x,cb,v.z);cg.rotation.y=head(s0+len);cg.userData.noLift=true;world.add(cg);g.cg=cg;
   });
 }
 function startBonus(g){
-  var p=player;BZ.on=true;BZ.g=g;BZ.sOld=p.s;BZ.uOld=p.u;BZ.t=0;BZ.xp=0;BZ.n=0;g.pp.forEach(function(q,i){q.on=true});
+  var p=player;BZ.on=true;BZ.g=g;g.hint=false;BZ.sOld=p.s;BZ.uOld=p.u;BZ.t=0;BZ.xp=0;BZ.n=0;g.pp.forEach(function(q,i){q.on=true});
   g.pp.forEach(function(q,i){setI(g.pm,i,q.x,q.y,q.z,0,q.gold?1.7:1,q.gold?1.7:1,q.gold?1.7:1,q.gold?0xffd24a:0xffe6f4)});fin(g.pm);
   p.bo=g.u0;p.s=g.s0;p.u=g.u0;p.ul=0;camU=p.u*cc.lf;
   flashV=1;camKV+=14;msg("OKYANUSA DALIŞ!","sm go");beep(300,.4,"sine",.1);beep(600,.5,"sine",.08);buzz(60);
@@ -3336,7 +3343,9 @@ function updOcean(dt){
     var tl=b.m.userData.tail;if(tl)tl.rotation.z=.35*Math.sin(tNow*2.2+b.ph)});
   dummy.rotation.set(0,0,0);g2.fm.instanceMatrix.needsUpdate=true;if(g2.fm.instanceColor)g2.fm.instanceColor.needsUpdate=true;
   if(oh){var tx="OKYANUS · İNCİ "+BZ.n+" · +"+BZ.xp+" XP";if(oh.textContent!==tx)oh.textContent=tx;oh.className="on"}
-  if(p.s>=g2.s0+g2.len-6)endBonus();
+  if(g2.pd){g2.pd.material.opacity=.35+.2*Math.sin(tNow*6);g2.er.scale.setScalar(1+.05*Math.sin(tNow*5))}
+  if(!g2.hint&&p.s>g2.s0+g2.len-150){g2.hint=true;msg("BÜYÜK MERCANA GİR · ANA YOLA IŞINLAN","sm go")}
+  if(p.s>=g2.s0+g2.len+6){flashV=1.4;beep(300,.5,"sine",.14);beep(900,.5,"triangle",.1);endBonus()}
 }
 function useZap(){
   var p=player;if(state!=="race"||p.zap<=0)return;
