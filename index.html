@@ -3199,16 +3199,16 @@ function startFall(r,side){
   r.ul=0;msg(TRK.id==="gol"?"GÖLE DÜŞTÜN!":"DENİZE DÜŞTÜN!","sm");buzz(90);shakeT=Math.max(shakeT,.3);if(combo>1)floatTxt("KOMBO KIRILDI","r");combo=0;comboT=0;beep(180,.3,"sawtooth",.1);
 }
 function fallStep(r,dt){
-  var f=r.fl,lim=W/2-.2,T1=f.T1,Tu=.7,Tr=1.2,u1=f.side*(lim+9),t,k;
+  var f=r.fl,lim=W/2-.2,T1=f.T1,Tu=1.4,Tr=1.5,u1=f.side*(lim+9),t,k;
   f.t+=dt;t=f.t;f.E=elevE(r.s);
   if(t<T1){k=t/T1;f.y=f.y0*(1-k*k);r.u=f.u0+(u1-f.u0)*sstep(0,1,k);f.rot+=dt*9*f.side;f.rx+=dt*4}
   else{
     if(!f.sp){f.sp=true;tp(r.s,r.u,0,_v);sparks(_v.x,.4,_v.z,80,.6,.85,1,28);sparks(_v.x,.4,_v.z,30,1,1,1,16,30,2.6);flashV=Math.max(flashV,.3);shakeT=Math.max(shakeT,.25);buzz(60);beep(110,.45,"sine",.13)}
-    if(t<T1+Tu){k=(t-T1)/Tu;f.y=-2*sstep(0,.5,k)+.15*Math.sin(t*9);r.u=u1;f.rot*=1-Math.min(1,dt*4);f.rx*=1-Math.min(1,dt*4)}
-    else{k=Math.min(1,(t-T1-Tu)/Tr);var e=sstep(0,1,k);f.y=-2+(f.E+4.4)*e;r.u=u1+(f.side*(lim-6)-u1)*e;f.rot*=1-Math.min(1,dt*4);f.rx*=1-Math.min(1,dt*4)}
+    if(t<T1+Tu){k=(t-T1)/Tu;f.y=-8*sstep(0,.55,k)+.2*Math.sin(t*7);r.u=u1;f.rot*=1-Math.min(1,dt*4);f.rx*=1-Math.min(1,dt*4)}
+    else{k=Math.min(1,(t-T1-Tu)/Tr);var e=sstep(0,1,k);f.y=-8+(f.E+12.4)*e;r.u=u1+(f.side*(lim-6)-u1)*e;f.rot*=1-Math.min(1,dt*4);f.rx*=1-Math.min(1,dt*4)}
   }
   r.v+=((t<T1+Tu?45:95)-r.v)*Math.min(1,dt*2.5);r.s+=r.v*dt;
-  if(t>=T1+Tu+Tr){r.fl=null;r.u=f.side*(lim-6);r.ul=0;r.wob=.5;r.dmg=2;r.flc=tNow+1.5}
+  if(t>=T1+Tu+Tr){r.fl=null;r.u=f.side*(lim-6);r.ul=0;r.wob=0;r.dmg=0;r.flc=tNow+4;r.inv=3.5;hitCD=3.5}
 }
 function wall(r,dt){
   var uo=r.bo||0;if(uo){r.u-=uo;wall2(r,dt);r.u+=uo;return}
@@ -3445,7 +3445,7 @@ function rank(){
 function say(t,cls){if(msgCool<=0){msg(t,cls);msgCool=.5}}
 
 function step(dt){
-  var p=player;msgCool-=dt;scrapeT-=dt;hitCD-=dt;shakeT-=dt;
+  var p=player;msgCool-=dt;scrapeT-=dt;hitCD-=dt;shakeT-=dt;if(p.inv>0){p.inv-=dt;hitCD=Math.max(hitCD,.3)}
   if(p.abT>0)p.abT-=dt;if(p.perf>0)p.perf-=dt;if(p.ult>0)p.ult-=dt;
   for(var q0=0;q0<N;q0++){var rq=racers[q0];if(rq.wob>0)rq.wob=Math.max(0,rq.wob-dt*1.6);if(rq.dmg>0)rq.dmg-=dt}
   if(state==="menu"||state==="countdown")place=rank();
@@ -3790,6 +3790,7 @@ function render(dt){
     var r=racers[i],rel=r.s-p.s;rel=((rel+L/2)%L+L)%L-L/2;
     var sr=sP+rel,vis=rel>-60&&rel<750&&sr>-300&&sr<L+880&&!r.off&&!(BZ.on&&i>0);
     r.m.visible=vis;r.sh.visible=vis;
+    if(vis&&r.me&&r.inv>0&&(Math.floor(tNow*12)&1)){r.m.visible=false;r.sh.visible=false}
     if(!vis)continue;
     tgp(sr,r.u,2.4+Math.sin(tNow*3+r.i*1.7)*.1,_v);
     if(r.fl)_v.y=r.fl.y;
