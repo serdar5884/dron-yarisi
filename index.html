@@ -3096,7 +3096,9 @@ function pickRival(){
   return best||MODELS[0];
 }
 var actIds=[1,2,3,4,5,6,7];
+var bzLost=false,BZT=18;
 function resetRace(){
+  bzLost=false;
   var ids=[1,2,3,4,5,6,7].sort(function(){return Math.random()-.5}),order=[],full=(tt||online);
   curField=fieldCnt();rivalM=null;
   if(full){ids.slice(0,4).forEach(function(id){order.push(id)});order.splice(4,0,0);ids.slice(4).forEach(function(id){order.push(id)});actIds=ids.slice()}
@@ -3148,10 +3150,10 @@ function countUp(e,to,f,delay){
   requestAnimationFrame(st);
 }
 function showEnd(){
-  $("ePl").textContent=place+" / "+(online&&NET.cnt?NET.cnt:curField);
+  $("ePl").textContent=bzLost?"DNF":place+" / "+(online&&NET.cnt?NET.cnt:curField);
   $("eB").textContent=bestLap?fmt(bestLap):"--";
   countUp($("eT"),finishedTime,fmt,0);countUp($("eC"),coins+bonusGot,function(v){return Math.round(v)+"  (bakiye "+wallet+")"},.15);
-  $("eh").textContent=place===1?"BİRİNCİSİN!":"YARIŞ BİTTİ";
+  $("eh").textContent=bzLost?"DRON BOZULDU · KAYBETTİN":place===1?"BİRİNCİSİN!":"YARIŞ BİTTİ";
   var sr=starRes,mk=function(b,t){var h=(sr.m&b)>0;return'<span'+(h?' class="ok"':'')+'><i class="s">'+(h?"★":"☆")+'</i>'+t+(h&&!(sr.o&b)?' <em>YENİ</em>':'')+'</span>'};
   $("eS").innerHTML=tt?"<span>Zaman turunda yıldız kazanılmaz</span>":mk(1,"Podyum (ilk 3)")+mk(2,"Hedef "+fmt(TRK.tgt)+" · senin "+fmt(finishedTime))+mk(4,"Close Pass "+Math.min(cpCount,9)+"/3");
   $("ce").setAttribute("data-p",String(place));
@@ -3309,7 +3311,7 @@ function buildOcean(){
   });
 }
 function startBonus(g){
-  var p=player;BZ.on=true;BZ.g=g;g.hint=false;BZ.sOld=p.s;BZ.uOld=p.u;BZ.t=0;BZ.xp=0;BZ.n=0;g.pp.forEach(function(q,i){q.on=true});
+  var p=player;BZ.on=true;BZ.g=g;g.hint=false;bzLost=false;msg("HIZLI GEÇ! DRONA SU DOLUYOR · NİTRO KULLAN","sm go");BZ.sOld=p.s;BZ.uOld=p.u;BZ.t=0;BZ.xp=0;BZ.n=0;g.pp.forEach(function(q,i){q.on=true});
   g.pp.forEach(function(q,i){setI(g.pm,i,q.x,q.y,q.z,0,q.gold?1.7:1,q.gold?1.7:1,q.gold?1.7:1,q.gold?0xffd24a:0xffe6f4)});fin(g.pm);
   p.bo=g.u0;p.s=g.s0;p.u=g.u0;p.ul=0;camU=p.u*cc.lf;
   flashV=1;camKV+=14;msg("OKYANUSA DALIŞ!","sm go");beep(300,.4,"sine",.1);beep(600,.5,"sine",.08);buzz(60);
@@ -3342,10 +3344,22 @@ function updOcean(dt){
     b.cs=bs;tp(bs,bu,0,_sv);b.m.position.set(_sv.x,HsuT(bs,bu)+b.y+2*Math.sin(t*2.3),_sv.z);b.m.rotation.set(0,head(bs)+dir,.08*Math.sin(t*3));
     var tl=b.m.userData.tail;if(tl)tl.rotation.z=.35*Math.sin(tNow*2.2+b.ph)});
   dummy.rotation.set(0,0,0);g2.fm.instanceMatrix.needsUpdate=true;if(g2.fm.instanceColor)g2.fm.instanceColor.needsUpdate=true;
-  if(oh){var tx="OKYANUS · İNCİ "+BZ.n+" · +"+BZ.xp+" XP";if(oh.textContent!==tx)oh.textContent=tx;oh.className="on"}
+  var wl=Math.min(1,BZ.t/BZT);
+  if(oh){var tx="İNCİ "+BZ.n+" · +"+BZ.xp+" XP · SU %"+Math.round(wl*100);if(oh.textContent!==tx)oh.textContent=tx;oh.className="on";oh.style.background=wl>.75?"rgba(150,20,20,.85)":wl>.5?"rgba(120,80,10,.85)":"";oh.style.borderColor=wl>.75?"#ff7a7a":""}
+  if(wl>.75&&!g2.w75){g2.w75=true;msg("SU DOLUYOR! HIZLAN!","sm go");beep(200,.3,"square",.12)}
+  if(BZ.t>=BZT){failBonus();return}
   if(g2.pd){g2.pd.material.opacity=.35+.2*Math.sin(tNow*6);g2.er.scale.setScalar(1+.05*Math.sin(tNow*5))}
   if(!g2.hint&&p.s>g2.s0+g2.len-150){g2.hint=true;msg("BÜYÜK MERCANA GİR · ANA YOLA IŞINLAN","sm go")}
   if(p.s>=g2.s0+g2.len+6){flashV=1.4;beep(300,.5,"sine",.14);beep(900,.5,"triangle",.1);endBonus()}
+}
+function failBonus(){
+  var p=player;BZ.on=false;p.bo=0;bzLost=true;
+  var oh=$("ozh");if(oh){oh.className="";oh.style.background="";oh.style.borderColor=""}
+  state="finish";finishedTime=raceT;place=curField;newRec=false;bonusGot=0;
+  var sm=stars[TRK.id]|0;starRes={o:sm,m:sm};
+  if(online){NET.fin=finishedTime;NET.ph="fin"}
+  flashV=1;shakeT=.8;buzz(200);beep(120,.8,"sawtooth",.18);beep(60,.9,"square",.14);sparks(p.m.position.x,p.m.position.y,p.m.position.z,50,.4,.7,1,26);
+  msg("DRON BOZULDU · KAYBETTİN","go");endTimer=2.2;save();
 }
 function useZap(){
   var p=player;if(state!=="race"||p.zap<=0)return;
