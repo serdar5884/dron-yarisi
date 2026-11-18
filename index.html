@@ -826,12 +826,12 @@ var TRACKS=[
     t.tgt=Math.round(3*t.L/(156+2*t.lv)*10)/10;
     if(t.id==="gunbatimi")t.tun=[[.18,.07],[.5,.07],[.8,.07]];
     if(t.id==="neon")t.sg=8;
-    var EL={vadi:[[9,1,.4],[6,3,1.9],[3,6,.7]],gunbatimi:[[16,1,2.1],[9,3,.3],[4,7,1.1]],neon:[[8,2,.5],[5,5,2.2],[3,9,.9]],sis:[[22,1,1],[12,3,2.6],[6,6,.2]],kabus:[[20,2,.8],[12,4,1.9],[6,8,.1]],col:[[14,1,3],[10,3,.6],[5,7,2.4]],buz:[[24,1,.2],[12,3,1.5],[7,6,2.9]],siber:[[12,2,1.1],[8,5,.3],[4,9,2]],deniz:[[4,1,.5],[2,3,1.2]],gol:[[10,1,.3],[6,3,1.5],[3,6,.4]],korfez:[[8,1,2],[4,3,.8]],tunel:[[18,2,.9],[14,3,2.4],[9,5,.6],[5,8,1.7]],hyper:[[14,8,.4],[6,3,1.1]],kapadokya:[[24,2,.9],[16,3,2.1],[8,6,.4]],agac:[[12,1,.8],[8,3,2.2],[4,6,.5]],strat:[[60,2,.5],[40,3,2],[22,5,.6]],kanyon:[[30,2,.9],[22,3,.3],[12,6,1.4]],hizlandirici:[[10,2,.4],[6,5,1.2]],cyber2:[[22,2,1.2],[14,4,.5],[8,7,2]]},
+    var EL={vadi:[[9,1,.4],[6,3,1.9],[3,6,.7]],gunbatimi:[[16,1,2.1],[9,3,.3],[4,7,1.1]],neon:[[8,2,.5],[5,5,2.2],[3,9,.9]],sis:[[22,1,1],[12,3,2.6],[6,6,.2]],kabus:[[20,2,.8],[12,4,1.9],[6,8,.1]],col:[[14,1,3],[10,3,.6],[5,7,2.4]],buz:[[24,1,.2],[12,3,1.5],[7,6,2.9]],siber:[[12,2,1.1],[8,5,.3],[4,9,2]],deniz:[[4,1,.5],[2,3,1.2]],gol:[[10,1,.3],[6,3,1.5],[3,6,.4]],korfez:[[8,1,2],[4,3,.8]],tunel:[[18,2,.9],[14,3,2.4],[9,5,.6],[5,8,1.7]],hyper:[[14,8,.4],[6,3,1.1]],kapadokya:[[24,2,.9],[16,3,2.1],[8,6,.4]],agac:[[34,1,.8],[22,3,2.2],[10,6,.5]],strat:[[60,2,.5],[40,3,2],[22,5,.6]],kanyon:[[30,2,.9],[22,3,.3],[12,6,1.4]],hizlandirici:[[10,2,.4],[6,5,1.2]],cyber2:[[22,2,1.2],[14,4,.5],[8,7,2]]},
         MT={vadi:45,gunbatimi:95,neon:28,sis:120,kabus:105,col:80,buz:120,siber:35,deniz:12,gol:40,korfez:30,tunel:0,hyper:0,kapadokya:0,agac:0,strat:0,kanyon:0,hizlandirici:0,cyber2:0},
         MTN={vadi:[[.27,.085]],gunbatimi:[[.33,.09],[.66,.09]],neon:[[.2,.09],[.62,.09]],sis:[[.15,.1],[.55,.1]],kabus:[[.25,.1],[.7,.1]],col:[[.4,.1]],buz:[[.2,.1],[.6,.1]],siber:[[.35,.1],[.8,.1]]};
     var e=EL[t.id].map(function(a){return a.slice()}),ms=0,sx,mn=1e9,tt0;
     for(sx=0;sx<t.L;sx+=15){tt0=sx/t.L*TAU;var d=0;e.forEach(function(a){d+=a[0]*a[1]*Math.cos(a[1]*tt0+a[2])*TAU/t.L});ms=Math.max(ms,Math.abs(d))}
-    var sc=Math.min(1.6,.17/ms);e.forEach(function(a){a[0]*=sc});
+    var sc=Math.min(t.id==="agac"?3:1.6,.17/ms);e.forEach(function(a){a[0]*=sc});
     for(sx=0;sx<t.L;sx+=15){tt0=sx/t.L*TAU;var y=0;e.forEach(function(a){y+=a[0]*Math.sin(a[1]*tt0+a[2])});mn=Math.min(mn,y)}
     t.el=e;t.eo=3-mn+(t.eb||0)+(t.dp?Math.max.apply(null,t.dp.map(function(d){return d[1]})):0);t.mt=MT[t.id];t.mtn=MTN[t.id];
   });
@@ -1937,7 +1937,7 @@ function buildTubeDeco(Rt,cy){
 }
 function buildGrove(){
   if(!TRK.gv)return;
-  var v=new THREE.Vector3(),v2=new THREE.Vector3(),i,k,sd,ss,arches=[],lm=new THREE.MeshLambertMaterial({flatShading:true}),gc=[0x3f8a2c,0x4f9a2f,0x5aa832,0x6bb83a,0x2f7a2a,0x78c040],tc=[0x6b4a32,0x7a5a3c,0x5e4230];
+  var v=new THREE.Vector3(),v2=new THREE.Vector3(),i,k,sd,ss,arches=[],lm=new THREE.MeshLambertMaterial({flatShading:true}),gc=[0x3f8a2c,0x4f9a2f,0x5aa832,0x6bb83a,0x2f7a2a,0x78c040],tc=[0xffffff,0xeadccb,0xd8c8b4];
   TRK.gv.forEach(function(q){var a0=Math.round(L*q[0]/10)*10,a1=a0+Math.round(L*q[1]/10)*10;for(ss=a0;ss<=a1;ss+=36)arches.push(ss)});
   var tr=[],br=[],bl=[],hw=W/2+6;
   arches.forEach(function(a){var E=elevE(a);
@@ -1955,12 +1955,24 @@ function buildGrove(){
   for(i=0;i<nsc;i++){var s0=R(0,L),u0=(rnd()<.5?-1:1)*R(W/2+13,W/2+100),h=R(20,34),fl2=Hsu(s0,u0);tp(s0,u0,0,v);
     tr.push({x:v.x,z:v.z,y:fl2-2,h:h+2,r:R(2.6,3.8),c:tc[(rnd()*3)|0]});
     var nc=3+((rnd()*3)|0);for(k=0;k<nc;k++)bl.push({x:v.x+R(-9,9),y:fl2+h+R(-3,6),z:v.z+R(-9,9),r:R(8,14),c:gc[(rnd()*6)|0]})}
-  var mT=inst(new THREE.CylinderGeometry(.68,1,1,8),lm,tr.length),mB=inst(new THREE.CylinderGeometry(.6,1,1,6),lm,br.length),mL=inst(new THREE.SphereGeometry(1,7,5),lm,bl.length);
+  var bk=ctex(64,128,function(g,w,h){g.fillStyle="#6a4c34";g.fillRect(0,0,w,h);for(var q=0;q<90;q++){g.fillStyle="rgba("+(Math.random()<.5?"30,20,12":"140,104,70")+","+(.18+Math.random()*.3)+")";g.fillRect(Math.random()*w,Math.random()*h,1+Math.random()*3,20+Math.random()*80)}},true);bk.repeat.set(2,3);
+  var bm=new THREE.MeshLambertMaterial({map:bk}),
+  lt=ctex(256,256,function(g,w,h){for(var q=0;q<46;q++){var x=40+Math.random()*176,y=40+Math.random()*176,a=Math.random()*6.28,Ll=26+Math.random()*20,Wl=Ll*.38,hh=70+Math.random()*30,ll=18+Math.random()*28;
+    g.save();g.translate(x,y);g.rotate(a);g.fillStyle="hsl("+hh+",55%,"+ll+"%)";g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(Ll*.5,-Wl,Ll,0);g.quadraticCurveTo(Ll*.5,Wl,0,0);g.fill();
+    g.strokeStyle="rgba(20,50,10,.55)";g.lineWidth=1;g.beginPath();g.moveTo(0,0);g.lineTo(Ll*.95,0);g.stroke();
+    g.fillStyle="rgba(255,255,170,"+(Math.random()*.18)+")";g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(Ll*.5,-Wl,Ll,0);g.lineTo(0,0);g.fill();g.restore()}}),
+  leafMat=new THREE.MeshLambertMaterial({map:lt,alphaTest:.5,side:THREE.DoubleSide}),NC=coarse?5:7;
+  var mT=inst(new THREE.CylinderGeometry(.68,1,1,8),bm,tr.length),mB=inst(new THREE.CylinderGeometry(.6,1,1,6),bm,br.length),mL=inst(new THREE.SphereGeometry(1,6,4),lm,bl.length),mC=inst(new THREE.PlaneGeometry(1,1),leafMat,bl.length*NC);
   tr.forEach(function(o,ix){setI(mT,ix,o.x,o.y+o.h/2,o.z,R(0,6.28),o.r,o.h,o.r,o.c)});
-  br.forEach(function(o,ix){var d=o.b.clone().sub(o.a),len=d.length();dummy.position.copy(o.a).addScaledVector(d,.5);dummy.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());dummy.scale.set(o.r,len,o.r);dummy.updateMatrix();mB.setMatrixAt(ix,dummy.matrix);colr.set(0x6b4a32);mB.setColorAt(ix,colr)});
+  br.forEach(function(o,ix){var d=o.b.clone().sub(o.a),len=d.length();dummy.position.copy(o.a).addScaledVector(d,.5);dummy.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());dummy.scale.set(o.r,len,o.r);dummy.updateMatrix();mB.setMatrixAt(ix,dummy.matrix);colr.set(0xffffff);mB.setColorAt(ix,colr)});
   dummy.quaternion.set(0,0,0,1);
-  bl.forEach(function(o,ix){setI(mL,ix,o.x,o.y,o.z,R(0,6.28),o.r,o.r*.72,o.r,o.c)});
-  fin(mT);fin(mB);fin(mL);
+  var kc=0,uu3=new THREE.Vector3();
+  bl.forEach(function(o,ix){setI(mL,ix,o.x,o.y,o.z,R(0,6.28),o.r*.72,o.r*.55,o.r*.72,0x1f4a1c);   // koyu çekirdek + yaprak kartları
+    for(var j=0;j<NC;j++){uu3.set(R(-.5,.5),R(-.5,.5),R(-.5,.5)).normalize().multiplyScalar(o.r*.62);var sc2=o.r*1.7;
+      dummy.position.set(o.x+uu3.x,o.y+uu3.y*.8,o.z+uu3.z);dummy.rotation.set(R(0,6.28),R(0,6.28),R(0,6.28));dummy.scale.set(sc2,sc2,sc2);dummy.updateMatrix();
+      mC.setMatrixAt(kc,dummy.matrix);colr.set(o.c).offsetHSL(R(-.02,.02),0,R(-.05,.08));mC.setColorAt(kc,colr);kc++}});
+  dummy.rotation.set(0,0,0);
+  fin(mT);fin(mB);fin(mL);fin(mC);
   /* güneş ışınları */
   var bt=ctex(32,128,function(g,w,h){var gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,"rgba(255,244,200,.95)");gr.addColorStop(1,"rgba(255,244,200,0)");g.fillStyle=gr;g.fillRect(0,0,w,h)});
   var sh=[];arches.forEach(function(a,ix){if(ix%2===0){var E=elevE(a+10);sh.push({s:a+R(-8,8),u:R(-W/2+3,W/2-3),E:E,t:R(.15,.4),ry:R(0,3.14)})}});
