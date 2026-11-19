@@ -845,8 +845,10 @@ function cl(s){return clT(TRK,s)}
 function dcl(s){return dclT(TRK,s)}
 function curv(s){var d=dclT(TRK,s);return d2clT(TRK,s)/(1+d*d)}
 function head(s){return Math.atan(dclT(TRK,s))}
-function brG(s){var b=TRK.br;if(!b)return 0;var ss=((s%L)+L)%L,s0=b[0]*L,ln=b[1]*L;if(ss<=s0||ss>=s0+ln)return 0;var q=Math.sin(Math.PI*(ss-s0)/ln);return b[2]*q*q}
-function brGd(s){var b=TRK.br;if(!b)return 0;var ss=((s%L)+L)%L,s0=b[0]*L,ln=b[1]*L;if(ss<=s0||ss>=s0+ln)return 0;return b[2]*Math.PI*Math.sin(2*Math.PI*(ss-s0)/ln)/ln}
+function brP(s){var b=TRK.br;if(!b)return null;var ss=((s%L)+L)%L,s0=b[0]*L,ln=b[1]*L;if(ss<=s0||ss>=s0+ln)return null;return {t:(ss-s0)/ln,G:b[2],ln:ln}}
+/* ileri doğru açılan Y: ada ucu sürücüye bakar, hızlı açılır (%30), düz gider, uzun ve yumuşak birleşir */
+function brG(s){var q=brP(s);if(!q)return 0;var t=q.t;if(t<.3){var u=t/.3;return q.G*(1-(1-u)*(1-u))}if(t<.55)return q.G;var v=(t-.55)/.45;return q.G*(1+Math.cos(Math.PI*v))/2}
+function brGd(s){var q=brP(s);if(!q)return 0;var t=q.t;if(t<.3)return q.G*2*(1-t/.3)/(.3*q.ln);if(t<.55)return 0;var v=(t-.55)/.45;return -q.G*Math.PI*Math.sin(Math.PI*v)/(2*.45*q.ln)}
 function tpr(s,u,y,o){var h=head(s),c=Math.cos(h),sn=Math.sin(h);o=o||new THREE.Vector3();return o.set(cl(s)-u*c,y,s+u*sn)}
 function tp(s,u,y,o){if(TRK.br){var g=brG(s);if(g>0)u+=u<0?-g:g}return tpr(s,u,y,o)}
 function wnS(s){var w=TRK.wt;if(!w)return 0;var L0=TRK.L,r=0,ss=((s%L0)+L0)%L0,i,d,v;for(i=0;i<w.s.length;i++){d=Math.abs(ss-w.s[i][0]*L0);d=Math.min(d,L0-d);v=1-sstep(w.s[i][1]*L0,w.s[i][1]*L0+w.ramp,d);if(v>r)r=v}return r}
