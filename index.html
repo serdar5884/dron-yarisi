@@ -814,7 +814,7 @@ var TRACKS=[
 (function(){
   var OR=["vadi","gunbatimi","kapadokya","agac","deniz","gol","strat","neon","hyper","tunel","sis","korfez","kanyon","col","kabus","hizlandirici","buz","cyber2","siber"],LV=[1,2,2,3,3,3,4,4,5,5,5,6,6,7,7,7,8,8,9],MU=[1,1.3,1.6,1.9,2.2,2.5,2.8,3.1,3.4,3.7,4,4.3,4.6,4.9,5.2,5.5,5.8,6.1,6.4];
   TRACKS.sort(function(a,b){return OR.indexOf(a.id)-OR.indexOf(b.id)});
-  TRACKS.forEach(function(t,i){t.stars=i*2;t.lv=LV[i];t.mult=MU[i];t.ai=[Math.round(145+i*2.6),Math.round(158+i*2.6)]});
+  TRACKS.forEach(function(t,i){t.stars=i;t.lv=LV[i];t.mult=MU[i];t.ai=[Math.round(145+i*2.6),Math.round(158+i*2.6)]});
 })();
 (function(){
   var LN={vadi:3360,gunbatimi:3640,neon:3780,sis:4060,kabus:4200,col:3920,buz:4200,siber:4340,deniz:4300,gol:4000,korfez:4300,tunel:4300,hyper:4300,kapadokya:4300,agac:4400,strat:4500,kanyon:4300,hizlandirici:4300,cyber2:4300};
@@ -2622,7 +2622,7 @@ var GARAGE=[
  {id:"ozel",ab:"slam",abn:"SES DALGASI",n:"Özel Dron",cost:300,body:0xff7a2e,acc:0xc85a1a,glow:0x2fd6ff,stripe:0xffffff,flame:0x6fd0ff,spd:158,hnd:1.18,nit:4.4,accel:1.1,dur:.5,shape:0,rshape:0,rcol:0xf26a1f}
 ];
 function gPow(e){return Math.round(((clamp((e.spd-140)/36,0,1)+clamp((e.accel||1)/1.6,0,1)+clamp(e.dur||.5,0,1)+clamp((e.hnd-.8)/.75,0,1))/4)*100)}
-GARAGE.forEach(function(d){if(d.cost>0)d.cost=Math.round(gPow(d)*60/10)*10});
+GARAGE.forEach(function(d){if(d.cost>0)d.cost=Math.round(gPow(d)*40/10)*10});
 function dlv(id){return dup[id]||(dup[id]={s:0,a:0,d:0,h:0,n:0})}
 function statAt(d,k,l){var b={s:d.spd,a:d.accel||1,d:d.dur||.5,h:d.hnd,n:d.nit}[k];return b+(Math.max(UCAP[k],b)-b)*l/UMAX}
 function ed(d){if(d.id==="ozel")return{spd:d.spd,accel:d.accel,dur:d.dur,hnd:d.hnd,nit:d.nit};var l=dlv(d.id);return{spd:statAt(d,"s",l.s),accel:statAt(d,"a",l.a),dur:statAt(d,"d",l.d),hnd:statAt(d,"h",l.h),nit:statAt(d,"n",l.n)}}
@@ -3153,7 +3153,7 @@ $("nxt").addEventListener("click",function(){
   resetRace();startCountdown();
 });
 $("tBack").addEventListener("click",function(){showCard(cardFrom==="ce"?"cs":cardFrom)});
-document.addEventListener("visibilitychange",function(){if(AC){try{if(document.hidden)AC.suspend();else if(!paused)AC.resume()}catch(e){}}if(document.hidden){save();clearInput();if(state==="race"||state==="countdown")setPause(true)}});
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&NET.on&&NET.api&&NET.api.wake)NET.api.wake();if(AC){try{if(document.hidden)AC.suspend();else if(!paused)AC.resume()}catch(e){}}if(document.hidden){save();clearInput();if(state==="race"||state==="countdown")setPause(true)}});
 
 /* ---------- Oyun durumu ---------- */
 var bendT=0,bendBad=false,wx="clear",lightT=8,combo=0,comboT=0,xp=0,hitCD=0,shakeT=0,state="menu",cd=0,lastN=99,raceT=0,lapStart=0,bestLap=0,coins=0,curLap=1,place=1,tNow=0,prevPs=0,endTimer=0,finishedTime=0,msgCool=0,bonusGot=0,openBefore=1,newRec=false;
@@ -3234,7 +3234,7 @@ function countUp(e,to,f,delay){
   requestAnimationFrame(st);
 }
 function showEnd(){
-  $("ePl").textContent=bzLost?"DNF":place+" / "+(online&&NET.cnt?NET.cnt:curField);
+  $("ePl").textContent=bzLost?"DNF":place+" / "+(online&&NET.cnt?(NET.tot||NET.cnt):curField);
   $("eB").textContent=bestLap?fmt(bestLap):"--";
   countUp($("eT"),finishedTime,fmt,0);countUp($("eC"),coins+bonusGot,function(v){return Math.round(v)+"  (bakiye "+wallet+")"},.15);
   $("eh").textContent=bzLost?"DRON BOZULDU · KAYBETTİN":place===1?"BİRİNCİSİN!":"YARIŞ BİTTİ";
@@ -4137,7 +4137,8 @@ function trPeer(code,host,onP,ok,fail){
     var id="dyr-"+code.toLowerCase(),cfg={config:{iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"}]}},
       peer,tab={},seen={},conns={},mine={},iv=0,myPid="",conn=null,opened=false,tm;
     var api={set:function(p){if(host)Object.assign(mine,p);else if(conn&&conn.open){try{conn.send({p:p})}catch(e){}}},
-      close:function(){clearInterval(iv);clearTimeout(tm);try{peer.destroy()}catch(e){}}};
+      close:function(){clearInterval(iv);clearTimeout(tm);try{peer.destroy()}catch(e){}},
+      wake:function(){try{if(peer&&peer.disconnected&&!peer.destroyed)peer.reconnect()}catch(e){}}};
     tm=setTimeout(function(){api.close();fail("timeout")},host?8000:11000);
     if(host){
       peer=new Peer(id,cfg);myPid=id;
@@ -4145,7 +4146,7 @@ function trPeer(code,host,onP,ok,fail){
         opened=true;clearTimeout(tm);
         iv=setInterval(function(){
           var now=Date.now();
-          for(var k in seen)if(now-seen[k]>3500){delete seen[k];delete tab[k];if(conns[k]){try{conns[k].close()}catch(e){}delete conns[k]}}
+          for(var k in seen)if(now-seen[k]>15000){delete seen[k];delete tab[k];if(conns[k]){try{conns[k].close()}catch(e){}delete conns[k]}}
           tab[myPid]=mine;var msg={t:tab};
           for(var c in conns)if(conns[c].open)try{conns[c].send(msg)}catch(e){}
           var a=[];for(var q in tab)a.push({pid:q,st:tab[q],me:q===myPid});onP(a);
@@ -4157,7 +4158,8 @@ function trPeer(code,host,onP,ok,fail){
         c.on("data",function(m){if(m&&m.p){tab[c.peer]=Object.assign(tab[c.peer]||{},m.p);seen[c.peer]=Date.now()}});
         c.on("close",function(){delete tab[c.peer];delete seen[c.peer];delete conns[c.peer]});
       });
-      peer.on("error",function(e){if(!opened){clearTimeout(tm);fail(e&&e.type||"err")}});
+      peer.on("error",function(e){if(!opened){clearTimeout(tm);fail(e&&e.type||"err")}else if(e&&/network|server-error|socket/.test(e.type||""))setTimeout(api.wake,1200)});
+      peer.on("disconnected",function(){if(opened)setTimeout(api.wake,800)});   // sinyal sunucusuyla bağ koparsa oda kodu ölmesin: yeniden bağlan
     }else{
       peer=new Peer(undefined,cfg);
       peer.on("open",function(pid){
@@ -4184,7 +4186,7 @@ function netName(){var v=($("oName").value||"").trim().replace(/[^\wÇĞİÖŞÜ
 (function(){var v="";try{v=localStorage.getItem("dyName")||""}catch(e){}$("oName").value=v||("Pilot"+(100+((Math.random()*899)|0)))})();
 function netJoined(kind,code,host,api){
   NET.on=true;NET.api=api;NET.host=host;NET.kind=kind;NET.code=code;NET.ph="lobby";NET.fin=0;NET.go=null;NET.lastGo=0;NET.slots={};NET.cnt=0;NET.prevTrk=NET.prevTrk||TRK;
-  online=true;
+  online=true;clearInterval(NET.hb);NET.hb=setInterval(function(){if(NET.on&&NET.api)try{NET.api.set(myState())}catch(e){}},300);   // sekme arka plandayken de canlı kal
   $("oMenu").hidden=true;$("oRoom").hidden=false;$("oRc").textContent=code;
   $("oHint").textContent=host?"Kodu arkadaşlarına gönder; oyunu açıp Online Yarış → Katıl desinler.":"Kurucunun yarışı başlatması bekleniyor…";
   $("oStart").hidden=!host;$("oTrk").hidden=!host;netErr("");
@@ -4216,7 +4218,7 @@ function netJoin(){
 }
 function netLeave(msg){
   try{if(NET.api)NET.api.close()}catch(e){}
-  NET.api=null;NET.on=false;NET.peers=[];NET.slots={};NET.cnt=0;online=false;
+  clearInterval(NET.hb);NET.api=null;NET.on=false;NET.peers=[];NET.slots={};NET.cnt=0;online=false;
   racers.forEach(function(r){r.net=false;if(r.tag){scene.remove(r.tag);r.tag=null}});
   $("oMenu").hidden=false;$("oRoom").hidden=true;$("posN").textContent="/8";
   if(NET.prevTrk&&NET.prevTrk!==TRK)setTrack(NET.prevTrk);else resetRace();
@@ -4282,8 +4284,12 @@ function netStart(g){
     if(r.tag)scene.remove(r.tag);r.tag=mkTag(r.nm);scene.add(r.tag);
     NET.slots[pid]=r;
   });
-  racers.forEach(function(r){if(!r.net){r.off=r.i>0;if(r.tag){scene.remove(r.tag);r.tag=null}}});
-  $("posN").textContent="/"+cnt;
+  var bots=Math.max(0,5-cnt),bi=0;   // 5'ten az gerçek oyuncu varsa kalanı bilgisayar (bot) doldurur
+  racers.forEach(function(r){if(!r.net){
+    if(r.i>0&&bi<bots){var k=cnt+bi,row=(k/2)|0,col=k%2;bi++;r.off=false;r.s=-10-row*13-(col?4:0);r.u=col?W*.22:-W*.22;r.v=0;r.ul=0;r.nm="Bot "+bi}
+    else r.off=r.i>0;
+    if(r.tag){scene.remove(r.tag);r.tag=null}}});
+  NET.tot=cnt+bots;$("posN").textContent="/"+(cnt+bots);
   startCountdown();
 }
 function mkTag(txt){
@@ -4311,12 +4317,12 @@ function netStep(r,dt){
 function netKey(r){return r.fin?1e7-r.finT:r.s}
 function netRank(){
   var mine=state==="finish"?1e7-finishedTime:player.s,n=1;
-  for(var i=1;i<N;i++){var r=racers[i];if(r.net&&!r.off){var k2=netKey(r);if(k2>mine||(k2===mine&&r.pid<NET.myPid))n++}}
+  for(var i=1;i<N;i++){var r=racers[i];if(r.net&&!r.off){var k2=netKey(r);if(k2>mine||(k2===mine&&r.pid<NET.myPid))n++}else if(!r.net&&!r.off&&r.i>0&&r.s>mine)n++}
   return n;
 }
 function netBoard(){
   var rows=[{pid:NET.myPid,nm:NET.name+" (sen)",k:state==="finish"?1e7-finishedTime:player.s,f:state==="finish"?finishedTime:0}];
-  for(var i=1;i<N;i++){var r=racers[i];if(r.net&&!r.off)rows.push({pid:r.pid,nm:r.nm,k:netKey(r),f:r.fin?r.finT:0,pr:Math.min(1,Math.max(0,r.s/(LAPS*L)))})}
+  for(var i=1;i<N;i++){var r=racers[i];if(r.net&&!r.off)rows.push({pid:r.pid,nm:r.nm,k:netKey(r),f:r.fin?r.finT:0,pr:Math.min(1,Math.max(0,r.s/(LAPS*L)))});else if(!r.net&&!r.off&&r.i>0)rows.push({pid:"bot"+i,nm:(r.nm||"Bot")+" 🤖",k:r.s,f:0,pr:Math.min(1,Math.max(0,r.s/(LAPS*L)))})}
   rows[0].pr=Math.min(1,player.s/(LAPS*L));
   rows.sort(function(a,b){return b.k-a.k||(a.pid<b.pid?-1:1)});
   var h="";rows.forEach(function(r,i){h+='<div'+(r.nm.indexOf("(sen)")>0?' class="me"':'')+'><span>'+(i+1)+". "+esc(r.nm)+'</span><i>'+(r.f?fmt(r.f):"yarışıyor %"+Math.round(r.pr*100))+'</i></div>'});
