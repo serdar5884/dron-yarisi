@@ -2622,7 +2622,8 @@ var GARAGE=[
  {id:"ozel",ab:"slam",abn:"SES DALGASI",n:"Özel Dron",cost:300,body:0xff7a2e,acc:0xc85a1a,glow:0x2fd6ff,stripe:0xffffff,flame:0x6fd0ff,spd:158,hnd:1.18,nit:4.4,accel:1.1,dur:.5,shape:0,rshape:0,rcol:0xf26a1f}
 ];
 function gPow(e){return Math.round(((clamp((e.spd-140)/36,0,1)+clamp((e.accel||1)/1.6,0,1)+clamp(e.dur||.5,0,1)+clamp((e.hnd-.8)/.75,0,1))/4)*100)}
-GARAGE.forEach(function(d){if(d.cost>0)d.cost=Math.round(gPow(d)*40/10)*10});
+var mnP=1e9;GARAGE.forEach(function(d){if(d.cost>0)mnP=Math.min(mnP,gPow(d))});   // en ucuz dron 1000, diğerleri güce orantılı
+GARAGE.forEach(function(d){if(d.cost>0)d.cost=Math.round(gPow(d)/mnP*1000/10)*10});
 function dlv(id){return dup[id]||(dup[id]={s:0,a:0,d:0,h:0,n:0})}
 function statAt(d,k,l){var b={s:d.spd,a:d.accel||1,d:d.dur||.5,h:d.hnd,n:d.nit}[k];return b+(Math.max(UCAP[k],b)-b)*l/UMAX}
 function ed(d){if(d.id==="ozel")return{spd:d.spd,accel:d.accel,dur:d.dur,hnd:d.hnd,nit:d.nit};var l=dlv(d.id);return{spd:statAt(d,"s",l.s),accel:statAt(d,"a",l.a),dur:statAt(d,"d",l.d),hnd:statAt(d,"h",l.h),nit:statAt(d,"n",l.n)}}
