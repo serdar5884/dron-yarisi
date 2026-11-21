@@ -4331,7 +4331,7 @@ function netBoard(){
 var boardIv=0;
 function netEndUi(){
   if(!online)return;
-  $("eBoard").hidden=false;$("eS").innerHTML="";$("again").textContent="LOBİYE DÖN";netBoard();
+  $("eBoard").hidden=false;$("eS").innerHTML="";$("again").textContent="YARIŞA DÖN";netBoard();
   clearInterval(boardIv);boardIv=setInterval(function(){if(!online||$("ce").hidden){clearInterval(boardIv);return}netBoard()},600);
 }
 function netToLobby(){
